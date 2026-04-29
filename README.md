@@ -2,7 +2,7 @@
 
 An interactive, customizable world map library built with Plotly.js that provides choropleth visualization with bubble markers, configurable color schemes, and real-time controls.
 
-![Interactive World Map Screenshot](screenshot.png)
+![Interactive World Map Screenshot](https://raw.githubusercontent.com/ehteshamnasim/interactive-world-map/main/screenshot.png)
 
 ## Features
 
