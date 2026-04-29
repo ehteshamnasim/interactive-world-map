@@ -1,0 +1,45 @@
+{
+  "name": "interactive-world-map",
+  "version": "1.0.0",
+  "description": "Production-ready, advanced world map with Shidoka-inspired features: download controls, fullscreen, table view, search, filtering, custom palettes, animations, and dark theme",
+  "main": "interactive-map.js",
+  "style": "interactive-map.css",
+  "files": [
+    "interactive-map.js",
+    "interactive-map.css",
+    "demo.html",
+    "examples.html"
+  ],
+  "keywords": [
+    "map",
+    "world map",
+    "interactive map",
+    "data visualization",
+    "choropleth",
+    "plotly",
+    "dark theme",
+    "responsive",
+    "geographic visualization",
+    "typescript"
+  ],
+  "author": "Ehtesham Nasim",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ehteshamnasim/interactive-world-map.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ehteshamnasim/interactive-world-map/issues"
+  },
+  "homepage": "https://github.com/ehteshamnasim/interactive-world-map#readme",
+  "peerDependencies": {
+    "plotly.js": "^2.27.0"
+  },
+  "scripts": {
+    "test": "echo \"No tests yet\"",
+    "example": "open index.html"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

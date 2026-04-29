@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive World Map - Complete Configuration Demo</title>
+  <link rel="stylesheet" href="interactive-map.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      height: 100vh;
+    }
+    
+    .sidebar {
+      background: white;
+      overflow-y: auto;
+      padding: 20px;
+      padding-bottom: 200px;
+      border-right: 1px solid #e1e4e8;
+      position: relative;
+    }
+    
+    .sticky-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 300px;
+      background: white;
+      padding: 15px 20px;
+      border-top: 2px solid #29707A;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+      z-index: 1000;
+    }
+    
+    .sidebar h1 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #29707A;
+    }
+    
+    .section {
+      margin-bottom: 25px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e1e4e8;
+    }
+    
+    .section:last-child {
+      border-bottom: none;
+    }
+    
+    .section h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #24292f;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .control {
+      margin-bottom: 12px;
+    }
+    
+    .control label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #57606a;
+      margin-bottom: 4px;
+    }
+    
+    .control input[type="text"],
+    .control input[type="number"],
+    .control select {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    
+    .control input[type="checkbox"] {
+      margin-right: 8px;
+    }
+    
+    .control input[type="color"] {
+      width: 60px;
+      height: 32px;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #29707A;
+      color: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    
+    .btn:hover {
+      background: #1f5661;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+    }
+    
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    
+    .map-area {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      background: #f6f8fa;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .map-header {
+      margin-bottom: 10px;
+      flex-shrink: 0;
+    }
+    
+    .map-header h2 {
+      font-size: 24px;
+      color: #24292f;
+    }
+    
+    #mapContainer {
+      flex: 1;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+    
+    .info-box {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #856404;
+      flex-shrink: 0;
+    }
+    
+    .info-box.success {
+      background: #d4edda;
+      border-color: #c3e6cb;
+      color: #155724;
+    }
+    
+    .info-box.error {
+      background: #f8d7da;
+      border-color: #f5c6cb;
+      color: #721c24;
+    }
+    
+    .color-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    .help-text {
+      font-size: 11px;
+      color: #6c757d;
+      margin-top: 2px;
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .loading {
+      position: relative;
+      pointer-events: none;
+    }
+    
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      margin: -10px 0 0 -10px;
+      border: 2px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar with all controls -->
+    <div class="sidebar">
+      <h1>Map Configuration</h1>
+      
+      <div class="section">
+        <h3>Basic Settings</h3>
+        
+        <div class="control">
+          <label>Chart Title</label>
+          <input type="text" id="chartTitle" value="Global Data Visualization" onchange="updateConfig()">
+        </div>
+        
+        <div class="control">
+          <label>Description</label>
+          <input type="text" id="description" value="Interactive world map with all configuration options" onchange="updateConfig()">
+        </div>
+        
+        <div class="control">
+          <label>Theme</label>
+          <select id="theme" onchange="updateConfig()">
+            <option value="light" selected>Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+        
+        <div class="control">
+          <label>Projection (Map Type)</label>
+          <select id="projection" onchange="updateConfig()">
+            <option value="miller" selected>Miller (Flat, Balanced)</option>
+            <option value="equirectangular">Equirectangular (Flat, Grid)</option>
+            <option value="mercator">Mercator (Flat, Web)</option>
+            <option value="natural earth">Natural Earth (Curved)</option>
+          </select>
+        </div>
+        
+        <div class="control">
+          <label>Width (px)</label>
+          <input type="number" id="width" placeholder="Auto" min="100" max="5000" onchange="updateConfig()">
+          <div class="help-text">Leave empty for auto width</div>
+        </div>
+        
+        <div class="control">
+          <label>Height (px)</label>
+          <input type="number" id="height" placeholder="Auto" min="100" max="5000" onchange="updateConfig()">
+          <div class="help-text">Leave empty for auto height</div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3>Show/Hide Elements</h3>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="hideHeader" onchange="updateConfig()">
+          <label for="hideHeader">Hide Header</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="hideDescription" onchange="updateConfig()">
+          <label for="hideDescription">Hide Description</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="hideCaptions" onchange="updateConfig()">
+          <label for="hideCaptions">Hide Captions</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="hideControls" onchange="updateConfig()">
+          <label for="hideControls">Hide All Controls</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="hideTableControl" onchange="updateConfig()">
+          <label for="hideTableControl">Hide Table Button</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="hideFullscreenControl" onchange="updateConfig()">
+          <label for="hideFullscreenControl">Hide Fullscreen Button</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="hideDownloadControl" onchange="updateConfig()">
+          <label for="hideDownloadControl">Hide Download Button</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="hideLegend" onchange="updateConfig()">
+          <label for="hideLegend">Hide Color Legend</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="noBorder" onchange="updateConfig()">
+          <label for="noBorder">No Border</label>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3>Interactions</h3>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="enableClick" checked onchange="updateConfig()">
+          <label for="enableClick">Enable Clicks</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="enableZoom" checked onchange="updateConfig()">
+          <label for="enableZoom">Enable Zoom</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="enablePan" checked onchange="updateConfig()">
+          <label for="enablePan">Enable Pan/Drag</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="enableHover" checked onchange="updateConfig()">
+          <label for="enableHover">Enable Hover</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="responsive" checked onchange="updateConfig()">
+          <label for="responsive">Responsive</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="enableSearch" onchange="updateConfig()">
+          <label for="enableSearch">Enable Search</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="enableAnimation" onchange="updateConfig()">
+          <label for="enableAnimation">Enable Animation</label>
+        </div>
+        
+        <div class="control">
+          <label>Animation Duration (ms)</label>
+          <input type="number" id="animationDuration" value="500" min="100" max="2000" step="100" onchange="updateConfig()">
+          <div class="help-text">100-2000ms recommended</div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3>Colors (Light Theme)</h3>
+        
+        <div class="color-inputs">
+          <div class="control">
+            <label>Min Color</label>
+            <input type="color" id="colorMin" value="#8db5d5" onchange="updateConfig()">
+          </div>
+          
+          <div class="control">
+            <label>Max Color</label>
+            <input type="color" id="colorMax" value="#0d5592" onchange="updateConfig()">
+          </div>
+          
+          <div class="control">
+            <label>Land Default</label>
+            <input type="color" id="landDefault" value="#e0e8f0" onchange="updateConfig()">
+          </div>
+          
+          <div class="control">
+            <label>Ocean Color</label>
+            <input type="color" id="oceanColor" value="#ffffff" onchange="updateConfig()">
+          </div>
+          
+          <div class="control">
+            <label>Marker Color</label>
+            <input type="color" id="markerColor" value="#5db8a8" onchange="updateConfig()">
+          </div>
+          
+          <div class="control">
+            <label>Highlight Color</label>
+            <input type="color" id="highlightColor" value="#ff9800" onchange="updateConfig()">
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3>Color Legend Bar</h3>
+        
+        <div class="control">
+          <label>Orientation</label>
+          <select id="colorbarOrientation" onchange="updateConfig()">
+            <option value="v" selected>Vertical</option>
+            <option value="h">Horizontal</option>
+          </select>
+        </div>
+        
+        <div class="control">
+          <label>Horizontal Position (0-1)</label>
+          <input type="number" id="colorbarX" value="0.98" step="0.05" min="0" max="1" onchange="updateConfig()">
+          <div class="help-text">0 = left, 1 = right, 0.5 = center</div>
+        </div>
+        
+        <div class="control">
+          <label>Vertical Position (0-1)</label>
+          <input type="number" id="colorbarY" value="0.15" step="0.01" min="0" max="1" onchange="updateConfig()">
+          <div class="help-text">0 = bottom, 1 = top</div>
+        </div>
+        
+        <div class="control">
+          <label>Length (0-1)</label>
+          <input type="number" id="colorbarLen" value="0.3" step="0.05" min="0.1" max="1" onchange="updateConfig()">
+          <div class="help-text">Relative to map size</div>
+        </div>
+        
+        <div class="control">
+          <label>Thickness (px)</label>
+          <input type="number" id="colorbarThickness" value="12" min="5" max="30" onchange="updateConfig()">
+          <div class="help-text">5-30px recommended</div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h3>Data Display</h3>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="dataLabelsVisible" onchange="updateConfig()">
+          <label for="dataLabelsVisible">Show Data Labels</label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="showCountryNames" onchange="updateConfig()">
+          <label for="showCountryNames">Show Country Names</label>
+        </div>
+      </div>
+      
+      <div class="sticky-actions">
+        <button class="btn" onclick="applyConfig()" style="width: 100%; margin-bottom: 8px;">Apply Configuration</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button class="btn btn-secondary" onclick="resetDefaults()">Reset</button>
+          <button class="btn btn-secondary" onclick="exportConfig()">Export</button>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
+          <button class="btn btn-secondary" onclick="loadSampleData()">Reload Data</button>
+          <button class="btn btn-secondary" onclick="window.open('examples.html', '_blank')">View Code</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="map-area">
+      <div class="map-header">
+        <h2>Live Preview</h2>
+      </div>
+      
+      <div id="mapContainer"></div>
+      
+      <div class="info-box" id="statusBox">
+        <strong>Tip:</strong> Change any setting in the sidebar and click "Apply Configuration" to see changes.
+        Click countries for details. All Shidoka Charts attributes are available.
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <script src="interactive-map.js?v=1746000000"></script>
+  <script>
+    let map;
+    
+    const sampleCountries = [
+      { country: 'USA', value: 85, name: 'United States' },
+      { country: 'CAN', value: 75, name: 'Canada' },
+      { country: 'MEX', value: 65, name: 'Mexico' },
+      { country: 'BRA', value: 70, name: 'Brazil' },
+      { country: 'ARG', value: 60, name: 'Argentina' },
+      { country: 'GBR', value: 90, name: 'United Kingdom' },
+      { country: 'FRA', value: 85, name: 'France' },
+      { country: 'DEU', value: 88, name: 'Germany' },
+      { country: 'ITA', value: 78, name: 'Italy' },
+      { country: 'ESP', value: 72, name: 'Spain' },
+      { country: 'RUS', value: 68, name: 'Russia' },
+      { country: 'CHN', value: 92, name: 'China' },
+      { country: 'JPN', value: 95, name: 'Japan' },
+      { country: 'IND', value: 80, name: 'India' },
+      { country: 'AUS', value: 83, name: 'Australia' },
+      { country: 'ZAF', value: 58, name: 'South Africa' }
+    ];
+    
+    const sampleMarkers = [
+      { lon: -100, lat: 38, size: 120, color: '#5db8a8', label: 'New York' },
+      { lon: -115, lat: 62, size: 100, color: '#d4b85f', label: 'Vancouver' },
+      { lon: -3, lat: 51, size: 110, color: '#5db8a8', label: 'London' },
+      { lon: 2, lat: 48, size: 105, color: '#5db8a8', label: 'Paris' },
+      { lon: 139, lat: 35, size: 115, color: '#5db8a8', label: 'Tokyo' },
+      { lon: 151, lat: -33, size: 95, color: '#5db8a8', label: 'Sydney' },
+      { lon: -99, lat: 19, size: 100, color: '#5db8a8', label: 'Mexico City' },
+      { lon: -47, lat: -23, size: 110, color: '#5db8a8', label: 'São Paulo' },
+      { lon: 13, lat: 52, size: 105, color: '#5db8a8', label: 'Berlin' },
+      { lon: 37, lat: 55, size: 115, color: '#5db8a8', label: 'Moscow' },
+      { lon: 121, lat: 31, size: 120, color: '#5db8a8', label: 'Shanghai' },
+      { lon: 77, lat: 28, size: 110, color: '#5db8a8', label: 'New Delhi' },
+      { lon: -58, lat: -34, size: 95, color: '#5db8a8', label: 'Buenos Aires' },
+      { lon: 31, lat: 30, size: 100, color: '#5db8a8', label: 'Cairo' },
+      { lon: 103, lat: 1, size: 105, color: '#5db8a8', label: 'Singapore' },
+      { lon: 18, lat: -33, size: 95, color: '#5db8a8', label: 'Cape Town' }
+    ];
+    
+    async function initMap() {
+      if (typeof Plotly === 'undefined') {
+        throw new Error('Plotly.js is not loaded. Please check your internet connection.');
+      }
+      
+      const config = getConfigFromUI();
+      
+      map = new InteractiveMap('mapContainer', config);
+      
+      map.on('countryClick', (country) => {
+        alert(`Country: ${country.name}\nValue: ${country.value}%`);
+      });
+      
+      map.on('markerClick', (marker) => {
+        alert(`Location: ${marker.label}\nCoordinates: ${marker.lat}, ${marker.lon}`);
+      });
+      
+      map.on('themeChange', (theme) => {
+        console.log('Theme changed to:', theme);
+        document.body.style.background = theme === 'dark' ? '#0d1117' : '#f0f2f5';
+        document.querySelector('.sidebar').style.background = theme === 'dark' ? '#161b22' : 'white';
+        document.querySelector('.sidebar').style.color = theme === 'dark' ? '#c9d1d9' : '#24292f';
+      });
+      
+      await map.loadCountryData(sampleCountries);
+      await map.loadScatterData(sampleMarkers);
+      await map.render();
+    }
+    
+    function showMessage(message, type = 'info') {
+      const statusBox = document.getElementById('statusBox');
+      statusBox.className = 'info-box ' + type;
+      statusBox.innerHTML = '<strong>' + (type === 'error' ? 'Error: ' : type === 'success' ? 'Success: ' : 'Tip: ') + '</strong>' + message;
+      
+      if (type !== 'info') {
+        setTimeout(() => {
+          statusBox.className = 'info-box';
+          statusBox.innerHTML = '<strong>Tip:</strong> Change any setting in the sidebar and click "Apply Configuration" to see changes.';
+        }, 5000);
+      }
+    }
+    
+    function validateInputs() {
+      const width = document.getElementById('width').value;
+      const height = document.getElementById('height').value;
+      const animDuration = parseInt(document.getElementById('animationDuration').value);
+      
+      if (width && (isNaN(width) || parseInt(width) < 100)) {
+        showMessage('Width must be at least 100px', 'error');
+        return false;
+      }
+      
+      if (height && (isNaN(height) || parseInt(height) < 100)) {
+        showMessage('Height must be at least 100px', 'error');
+        return false;
+      }
+      
+      if (isNaN(animDuration) || animDuration < 0 || animDuration > 5000) {
+        showMessage('Animation duration must be between 0-5000ms', 'error');
+        return false;
+      }
+      
+      return true;
+    }
+    
+    function getConfigFromUI() {
+      const widthVal = document.getElementById('width').value;
+      const heightVal = document.getElementById('height').value;
+      
+      return {
+        chartTitle: document.getElementById('chartTitle').value || '',
+        description: document.getElementById('description').value || '',
+        theme: document.getElementById('theme').value,
+        projection: document.getElementById('projection').value,
+        width: widthVal ? parseInt(widthVal) : null,
+        height: heightVal ? parseInt(heightVal) : null,
+        
+        hideHeader: document.getElementById('hideHeader').checked,
+        hideDescription: document.getElementById('hideDescription').checked,
+        hideCaptions: document.getElementById('hideCaptions').checked,
+        hideControls: document.getElementById('hideControls').checked,
+        hideTableControl: document.getElementById('hideTableControl').checked,
+        hideFullscreenControl: document.getElementById('hideFullscreenControl').checked,
+        hideDownloadControl: document.getElementById('hideDownloadControl').checked,
+        hideLegend: document.getElementById('hideLegend').checked,
+        noBorder: document.getElementById('noBorder').checked,
+        
+        enableClick: document.getElementById('enableClick').checked,
+        enableZoom: document.getElementById('enableZoom').checked,
+        enablePan: document.getElementById('enablePan').checked,
+        enableHover: document.getElementById('enableHover').checked,
+        responsive: document.getElementById('responsive').checked,
+        enableSearch: document.getElementById('enableSearch').checked,
+        enableAnimation: document.getElementById('enableAnimation').checked,
+        animationDuration: parseInt(document.getElementById('animationDuration').value) || 500,
+        
+        dataLabelsVisible: document.getElementById('dataLabelsVisible').checked,
+        showCountryNames: document.getElementById('showCountryNames').checked,
+        
+        colors: {
+          light: {
+            scale: [
+              [0, document.getElementById('colorMin').value || '#8db5d5'],
+              [0.35, '#5a9fce'],
+              [0.65, '#2b7ab8'],
+              [1, document.getElementById('colorMax').value || '#0d5592']
+            ],
+            landDefault: document.getElementById('landDefault').value || '#e0e8f0',
+            ocean: document.getElementById('oceanColor').value || '#ffffff',
+            scatterDefault: document.getElementById('markerColor').value || '#5db8a8',
+            scatterHighlight: document.getElementById('highlightColor').value || '#ff9800',
+            borders: 'white'
+          },
+          dark: {
+            scale: [
+              [0, '#1a3a52'],
+              [0.4, '#2e5f7a'],
+              [0.7, '#4a8ba8'],
+              [1, '#6bb6d6']
+            ],
+            landDefault: '#1e2530',
+            borders: '#3d4451',
+            ocean: '#0d1117',
+            scatterDefault: '#5ba3d0',
+            scatterHighlight: '#f39c12'
+          }
+        },
+        
+        colorbar: {
+          orientation: document.getElementById('colorbarOrientation').value || 'v',
+          x: parseFloat(document.getElementById('colorbarX').value) || 0.98,
+          y: parseFloat(document.getElementById('colorbarY').value) || 0.15,
+          len: parseFloat(document.getElementById('colorbarLen').value) || 0.3,
+          thickness: parseInt(document.getElementById('colorbarThickness').value) || 12
+        }
+      };
+    }
+    
+    function updateConfig() {
+      console.log('Config updated');
+    }
+    
+    async function applyConfig() {
+      if (!validateInputs()) {
+        return;
+      }
+      
+      const applyBtn = document.querySelector('.btn');
+      applyBtn.disabled = true;
+      applyBtn.classList.add('loading');
+      applyBtn.textContent = 'Applying...';
+      
+      try {
+        if (map) {
+          map.destroy();
+        }
+        await initMap();
+        showMessage('Configuration applied successfully!', 'success');
+      } catch (error) {
+        console.error('Error applying config:', error);
+        showMessage('Failed to apply configuration: ' + error.message, 'error');
+      } finally {
+        applyBtn.disabled = false;
+        applyBtn.classList.remove('loading');
+        applyBtn.textContent = 'Apply Configuration';
+      }
+    }
+    
+    function resetDefaults() {
+      document.getElementById('chartTitle').value = 'Global Data Visualization';
+      document.getElementById('description').value = 'Interactive world map with all configuration options';
+      document.getElementById('theme').value = 'light';
+      document.getElementById('projection').value = 'miller';
+      document.getElementById('width').value = '';
+      document.getElementById('height').value = '';
+      
+      document.getElementById('hideHeader').checked = false;
+      document.getElementById('hideDescription').checked = false;
+      document.getElementById('hideCaptions').checked = false;
+      document.getElementById('hideControls').checked = false;
+      document.getElementById('hideTableControl').checked = false;
+      document.getElementById('hideFullscreenControl').checked = false;
+      document.getElementById('hideDownloadControl').checked = false;
+      document.getElementById('hideLegend').checked = false;
+      document.getElementById('noBorder').checked = false;
+      
+      document.getElementById('enableClick').checked = true;
+      document.getElementById('enableZoom').checked = true;
+      document.getElementById('enablePan').checked = true;
+      document.getElementById('enableHover').checked = true;
+      document.getElementById('responsive').checked = true;
+      document.getElementById('enableSearch').checked = false;
+      document.getElementById('enableAnimation').checked = false;
+      document.getElementById('animationDuration').value = '500';
+      
+      document.getElementById('colorMin').value = '#d4e9f5';
+      document.getElementById('colorMax').value = '#2678b3';
+      document.getElementById('landDefault').value = '#f3f7fa';
+      document.getElementById('oceanColor').value = '#ffffff';
+      document.getElementById('markerColor').value = '#5db8a8';
+      document.getElementById('highlightColor').value = '#ff9800';
+      
+      document.getElementById('colorbarX').value = '0.5';
+      document.getElementById('colorbarY').value = '0.02';
+      document.getElementById('colorbarLen').value = '0.4';
+      document.getElementById('colorbarThickness').value = '15';
+      
+      document.getElementById('dataLabelsVisible').checked = false;
+      document.getElementById('showCountryNames').checked = false;
+      
+      applyConfig();
+    }
+    
+    function exportConfig() {
+      try {
+        const config = getConfigFromUI();
+        const json = JSON.stringify(config, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'map-config.json';
+        a.click();
+        URL.revokeObjectURL(url);
+        showMessage('Configuration exported successfully!', 'success');
+      } catch (error) {
+        showMessage('Failed to export configuration', 'error');
+      }
+    }
+    
+    async function loadSampleData() {
+      if (map) {
+        try {
+          showMessage('Loading sample data...', 'info');
+          await map.loadCountryData(sampleCountries);
+          await map.loadScatterData(sampleMarkers);
+          await map.render();
+          showMessage('Sample data loaded successfully!', 'success');
+        } catch (error) {
+          showMessage('Failed to load sample data', 'error');
+        }
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        await initMap();
+      } catch (error) {
+        showMessage('Failed to initialize map: ' + error.message, 'error');
+      }
+    });
+  </script>
+</body>
+</html>

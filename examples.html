@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Map - Code Examples</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Monaco', 'Courier New', monospace;
+      background: #f5f7f9;
+      color: #24292f;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      font-size: 32px;
+      color: #24292f;
+      margin-bottom: 10px;
+      border-bottom: 2px solid #29707A;
+      padding-bottom: 10px;
+    }
+    
+    .intro {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      border-left: 4px solid #29707A;
+      border: 1px solid #e1e4e8;
+    }
+    
+    h2 {
+      font-size: 24px;
+      color: #24292f;
+      margin: 40px 0 20px 0;
+      border-bottom: 2px solid #d0d7de;
+      padding-bottom: 8px;
+    }
+    
+    h3 {
+      font-size: 18px;
+      color: #24292f;
+      margin: 25px 0 15px 0;
+    }
+    
+    .code-section {
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      overflow: hidden;
+    }
+    
+    .code-header {
+      background: #f6f8fa;
+      padding: 12px 20px;
+      border-bottom: 1px solid #d0d7de;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .code-header h4 {
+      font-size: 14px;
+      color: #24292f;
+      font-weight: 600;
+    }
+    
+    .copy-btn {
+      background: #29707A;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    
+    .copy-btn:hover {
+      background: #1f5661;
+    }
+    
+    .copy-btn.copied {
+      background: #2678b3;
+    }
+    
+    pre {
+      margin: 0;
+      padding: 20px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+      background: #f6f8fa;
+    }
+    
+    code {
+      font-family: 'Monaco', 'Courier New', monospace;
+      color: #24292f;
+    }
+    
+    .keyword { color: #d73a49; }
+    .string { color: #032f62; }
+    .number { color: #005cc5; }
+    .comment { color: #6a737d; font-style: italic; }
+    .function { color: #6f42c1; }
+    .property { color: #005cc5; }
+    
+    .note {
+      background: #fff8e6;
+      border-left: 4px solid #29707A;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+      border: 1px solid #e1e4e8;
+    }
+    
+    .note strong {
+      color: #24292f;
+    }
+    
+    .config-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .config-table th {
+      background: #f6f8fa;
+      padding: 12px;
+      text-align: left;
+      font-size: 13px;
+      color: #24292f;
+      border-bottom: 1px solid #d0d7de;
+      font-weight: 600;
+    }
+    
+    .config-table td {
+      padding: 12px;
+      border-bottom: 1px solid #e1e4e8;
+      font-size: 13px;
+    }
+    
+    .config-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .config-table td:first-child {
+      color: #29707A;
+      font-weight: 600;
+    }
+    
+    .back-btn {
+      display: inline-block;
+      background: #29707A;
+      color: white;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      margin-bottom: 30px;
+      transition: background 0.2s;
+    }
+    
+    .back-btn:hover {
+      background: #357a86;
+    }
+    
+    .toc {
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .toc h3 {
+      margin-top: 0;
+      color: #24292f;
+    }
+    
+    .toc ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    
+    .toc li {
+      padding: 6px 0;
+    }
+    
+    .toc a {
+      color: #29707A;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    
+    .toc a:hover {
+      color: #2678b3;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="demo.html" class="back-btn">← Back to Demo</a>
+    
+    <h1>Interactive World Map - Code Examples</h1>
+    
+    <div class="intro">
+      <p><strong>Complete guide to using the Interactive World Map library.</strong></p>
+      <p>This page shows all configuration options with working code examples. Copy any example and customize it for your needs.</p>
+    </div>
+    
+    <div class="toc">
+      <h3>Quick Navigation</h3>
+      <ul>
+        <li><a href="#basic">1. Basic Setup</a></li>
+        <li><a href="#data">2. Loading Data</a></li>
+        <li><a href="#visual">3. Visual Customization</a></li>
+        <li><a href="#colorbar">4. Colorbar Configuration</a></li>
+        <li><a href="#interactions">5. Interactions & Events</a></li>
+        <li><a href="#advanced">6. Advanced Configuration</a></li>
+        <li><a href="#all-options">7. All Options Reference</a></li>
+      </ul>
+    </div>
+    
+    <!-- SECTION 1: BASIC SETUP -->
+    <h2 id="basic">1. Basic Setup</h2>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Minimal Example</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'basic-minimal')">Copy</button>
+      </div>
+      <pre><code id="basic-minimal"><span class="comment">// Include required libraries in HTML</span>
+<span class="keyword">&lt;script</span> <span class="property">src</span>=<span class="string">"https://cdn.plot.ly/plotly-2.27.0.min.js"</span><span class="keyword">&gt;&lt;/script&gt;</span>
+<span class="keyword">&lt;script</span> <span class="property">src</span>=<span class="string">"interactive-map.js"</span><span class="keyword">&gt;&lt;/script&gt;</span>
+<span class="keyword">&lt;link</span> <span class="property">rel</span>=<span class="string">"stylesheet"</span> <span class="property">href</span>=<span class="string">"interactive-map.css"</span><span class="keyword">&gt;</span>
+
+<span class="comment">// Create a container in your HTML</span>
+<span class="keyword">&lt;div</span> <span class="property">id</span>=<span class="string">"mapContainer"</span><span class="keyword">&gt;&lt;/div&gt;</span>
+
+<span class="comment">// Initialize the map</span>
+<span class="keyword">const</span> map = <span class="keyword">new</span> <span class="function">InteractiveMap</span>(<span class="string">'mapContainer'</span>, {
+  <span class="property">chartTitle</span>: <span class="string">'My World Map'</span>,
+  <span class="property">theme</span>: <span class="string">'light'</span>
+});
+
+<span class="comment">// Load and render data</span>
+<span class="keyword">await</span> map.<span class="function">loadCountryData</span>(<span class="string">'country-data.json'</span>);
+<span class="keyword">await</span> map.<span class="function">render</span>();</code></pre>
+    </div>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>With Inline Data</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'basic-inline')">Copy</button>
+      </div>
+      <pre><code id="basic-inline"><span class="keyword">const</span> countryData = [
+  { <span class="property">country</span>: <span class="string">'USA'</span>, <span class="property">value</span>: <span class="number">85</span>, <span class="property">name</span>: <span class="string">'United States'</span> },
+  { <span class="property">country</span>: <span class="string">'CAN'</span>, <span class="property">value</span>: <span class="number">75</span>, <span class="property">name</span>: <span class="string">'Canada'</span> },
+  { <span class="property">country</span>: <span class="string">'GBR'</span>, <span class="property">value</span>: <span class="number">90</span>, <span class="property">name</span>: <span class="string">'United Kingdom'</span> },
+  { <span class="property">country</span>: <span class="string">'JPN'</span>, <span class="property">value</span>: <span class="number">95</span>, <span class="property">name</span>: <span class="string">'Japan'</span> }
+];
+
+<span class="keyword">const</span> map = <span class="keyword">new</span> <span class="function">InteractiveMap</span>(<span class="string">'mapContainer'</span>);
+<span class="keyword">await</span> map.<span class="function">loadCountryData</span>(countryData);
+<span class="keyword">await</span> map.<span class="function">render</span>();</code></pre>
+    </div>
+    
+    <div class="note">
+      <strong>Note:</strong> Country codes must be ISO-3 format (3-letter codes). Common examples: USA, CAN, GBR, FRA, DEU, JPN, CHN, IND, AUS, BRA.
+    </div>
+    
+    <!-- SECTION 2: DATA LOADING -->
+    <h2 id="data">2. Loading Data</h2>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Country Data (Choropleth)</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'data-country')">Copy</button>
+      </div>
+      <pre><code id="data-country"><span class="comment">// From JSON file</span>
+<span class="keyword">await</span> map.<span class="function">loadCountryData</span>(<span class="string">'country-data.json'</span>);
+
+<span class="comment">// From array</span>
+<span class="keyword">const</span> data = [
+  { 
+    <span class="property">country</span>: <span class="string">'USA'</span>,     <span class="comment">// Required: ISO-3 code</span>
+    <span class="property">value</span>: <span class="number">85</span>,         <span class="comment">// Required: numeric value</span>
+    <span class="property">name</span>: <span class="string">'United States'</span>  <span class="comment">// Optional: display name</span>
+  }
+];
+<span class="keyword">await</span> map.<span class="function">loadCountryData</span>(data);
+
+<span class="comment">// From API</span>
+<span class="keyword">const</span> response = <span class="keyword">await</span> <span class="function">fetch</span>(<span class="string">'https://api.example.com/data'</span>);
+<span class="keyword">const</span> apiData = <span class="keyword">await</span> response.<span class="function">json</span>();
+<span class="keyword">await</span> map.<span class="function">loadCountryData</span>(apiData);</code></pre>
+    </div>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Scatter/Marker Data</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'data-scatter')">Copy</button>
+      </div>
+      <pre><code id="data-scatter"><span class="comment">// Add markers/points on the map</span>
+<span class="keyword">const</span> markers = [
+  { 
+    <span class="property">lon</span>: <span class="number">-100</span>,           <span class="comment">// Required: longitude (-180 to 180)</span>
+    <span class="property">lat</span>: <span class="number">38</span>,             <span class="comment">// Required: latitude (-90 to 90)</span>
+    <span class="property">size</span>: <span class="number">120</span>,           <span class="comment">// Optional: marker size</span>
+    <span class="property">color</span>: <span class="string">'#2678b3'</span>,   <span class="comment">// Optional: marker color</span>
+    <span class="property">label</span>: <span class="string">'New York'</span>    <span class="comment">// Optional: hover label</span>
+  },
+  { <span class="property">lon</span>: <span class="number">139</span>, <span class="property">lat</span>: <span class="number">35</span>, <span class="property">size</span>: <span class="number">115</span>, <span class="property">label</span>: <span class="string">'Tokyo'</span> }
+];
+
+<span class="keyword">await</span> map.<span class="function">loadScatterData</span>(markers);
+
+<span class="comment">// Or from file</span>
+<span class="keyword">await</span> map.<span class="function">loadScatterData</span>(<span class="string">'scatter-data.json'</span>);</code></pre>
+    </div>
+    
+    <!-- SECTION 3: VISUAL CUSTOMIZATION -->
+    <h2 id="visual">3. Visual Customization</h2>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Themes & Colors</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'visual-theme')">Copy</button>
+      </div>
+      <pre><code id="visual-theme"><span class="keyword">const</span> map = <span class="keyword">new</span> <span class="function">InteractiveMap</span>(<span class="string">'mapContainer'</span>, {
+  <span class="property">theme</span>: <span class="string">'light'</span>,  <span class="comment">// 'light' or 'dark'</span>
+  
+  <span class="comment">// Custom colors for light theme</span>
+  <span class="property">colors</span>: {
+    <span class="property">light</span>: {
+      <span class="property">scale</span>: [
+        [<span class="number">0</span>, <span class="string">'#d4e9f5'</span>],  <span class="comment">// Min value color (light blue)</span>
+        [<span class="number">1</span>, <span class="string">'#2678b3'</span>]   <span class="comment">// Max value color (dark blue)</span>
+      ],
+      <span class="property">landDefault</span>: <span class="string">'#f3f7fa'</span>,      <span class="comment">// Countries without data</span>
+      <span class="property">ocean</span>: <span class="string">'#ffffff'</span>,            <span class="comment">// Ocean/sea color</span>
+      <span class="property">scatterDefault</span>: <span class="string">'#2678b3'</span>,   <span class="comment">// Default marker color</span>
+      <span class="property">scatterHighlight</span>: <span class="string">'#ff9800'</span>, <span class="comment">// Highlighted marker</span>
+      <span class="property">borders</span>: <span class="string">'white'</span>             <span class="comment">// Country borders</span>
+    }
+  }
+});</code></pre>
+    </div>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Map Projections</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'visual-projection')">Copy</button>
+      </div>
+      <pre><code id="visual-projection"><span class="keyword">const</span> map = <span class="keyword">new</span> <span class="function">InteractiveMap</span>(<span class="string">'mapContainer'</span>, {
+  <span class="property">projection</span>: <span class="string">'miller'</span>  <span class="comment">// Options: miller, equirectangular, mercator, natural earth</span>
+});
+
+<span class="comment">// miller - Balanced flat projection (default, recommended)</span>
+<span class="comment">// equirectangular - Simple flat grid</span>
+<span class="comment">// mercator - Navigation-style (enlarges poles)</span>
+<span class="comment">// natural earth - Curved globe appearance</span></code></pre>
+    </div>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Size & Layout</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'visual-size')">Copy</button>
+      </div>
+      <pre><code id="visual-size"><span class="keyword">const</span> map = <span class="keyword">new</span> <span class="function">InteractiveMap</span>(<span class="string">'mapContainer'</span>, {
+  <span class="property">width</span>: <span class="number">1200</span>,        <span class="comment">// Fixed width in pixels</span>
+  <span class="property">height</span>: <span class="number">600</span>,       <span class="comment">// Fixed height in pixels</span>
+  <span class="property">responsive</span>: <span class="keyword">true</span>,  <span class="comment">// Auto-resize to container (overrides width/height)</span>
+  <span class="property">noBorder</span>: <span class="keyword">false</span>    <span class="comment">// Remove border around map</span>
+});</code></pre>
+    </div>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Visibility Controls</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'visual-visibility')">Copy</button>
+      </div>
+      <pre><code id="visual-visibility"><span class="keyword">const</span> map = <span class="keyword">new</span> <span class="function">InteractiveMap</span>(<span class="string">'mapContainer'</span>, {
+  <span class="property">hideHeader</span>: <span class="keyword">false</span>,              <span class="comment">// Hide title</span>
+  <span class="property">hideDescription</span>: <span class="keyword">false</span>,         <span class="comment">// Hide description text</span>
+  <span class="property">hideCaptions</span>: <span class="keyword">false</span>,            <span class="comment">// Hide all captions</span>
+  <span class="property">hideControls</span>: <span class="keyword">false</span>,            <span class="comment">// Hide all control buttons</span>
+  <span class="property">hideTableControl</span>: <span class="keyword">false</span>,        <span class="comment">// Hide table view button</span>
+  <span class="property">hideFullscreenControl</span>: <span class="keyword">false</span>,  <span class="comment">// Hide fullscreen button</span>
+  <span class="property">hideDownloadControl</span>: <span class="keyword">false</span>,    <span class="comment">// Hide download button</span>
+  <span class="property">hideLegend</span>: <span class="keyword">false</span>,              <span class="comment">// Hide colorbar legend</span>
+  <span class="property">dataLabelsVisible</span>: <span class="keyword">false</span>,       <span class="comment">// Show labels on markers</span>
+  <span class="property">showCountryNames</span>: <span class="keyword">false</span>         <span class="comment">// Show country names on map</span>
+});</code></pre>
+    </div>
+    
+    <!-- SECTION 4: COLORBAR -->
+    <h2 id="colorbar">4. Colorbar Configuration</h2>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Horizontal Colorbar (Bottom)</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'colorbar-horizontal')">Copy</button>
+      </div>
+      <pre><code id="colorbar-horizontal"><span class="keyword">const</span> map = <span class="keyword">new</span> <span class="function">InteractiveMap</span>(<span class="string">'mapContainer'</span>, {
+  <span class="property">colorbar</span>: {
+    <span class="property">orientation</span>: <span class="string">'h'</span>,    <span class="comment">// Horizontal</span>
+    <span class="property">x</span>: <span class="number">0.5</span>,               <span class="comment">// Center horizontally (0 = left, 1 = right)</span>
+    <span class="property">y</span>: <span class="number">0.03</span>,              <span class="comment">// Near bottom (0 = bottom, 1 = top)</span>
+    <span class="property">len</span>: <span class="number">0.5</span>,             <span class="comment">// 50% of map width</span>
+    <span class="property">thickness</span>: <span class="number">15</span>         <span class="comment">// Height in pixels</span>
+  }
+});</code></pre>
+    </div>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Vertical Colorbar (Right Side)</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'colorbar-vertical')">Copy</button>
+      </div>
+      <pre><code id="colorbar-vertical"><span class="keyword">const</span> map = <span class="keyword">new</span> <span class="function">InteractiveMap</span>(<span class="string">'mapContainer'</span>, {
+  <span class="property">colorbar</span>: {
+    <span class="property">orientation</span>: <span class="string">'v'</span>,    <span class="comment">// Vertical</span>
+    <span class="property">x</span>: <span class="number">0.98</span>,              <span class="comment">// Right side (0 = left, 1 = right)</span>
+    <span class="property">y</span>: <span class="number">0.5</span>,               <span class="comment">// Center vertically (0 = bottom, 1 = top)</span>
+    <span class="property">len</span>: <span class="number">0.6</span>,             <span class="comment">// 60% of map height</span>
+    <span class="property">thickness</span>: <span class="number">20</span>         <span class="comment">// Width in pixels</span>
+  }
+});</code></pre>
+    </div>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Vertical Colorbar (Left Side)</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'colorbar-left')">Copy</button>
+      </div>
+      <pre><code id="colorbar-left"><span class="keyword">const</span> map = <span class="keyword">new</span> <span class="function">InteractiveMap</span>(<span class="string">'mapContainer'</span>, {
+  <span class="property">colorbar</span>: {
+    <span class="property">orientation</span>: <span class="string">'v'</span>,    <span class="comment">// Vertical</span>
+    <span class="property">x</span>: <span class="number">0.02</span>,              <span class="comment">// Left side</span>
+    <span class="property">y</span>: <span class="number">0.5</span>,               <span class="comment">// Center vertically</span>
+    <span class="property">len</span>: <span class="number">0.7</span>,             <span class="comment">// 70% of map height</span>
+    <span class="property">thickness</span>: <span class="number">18</span>         <span class="comment">// Width in pixels</span>
+  }
+});</code></pre>
+    </div>
+    
+    <div class="note">
+      <strong>Tip:</strong> For horizontal colorbars (top/bottom), use x=0.5 for center, x=0 for left, x=1 for right. 
+      For vertical colorbars (left/right), use y=0.5 for center, y=0 for bottom, y=1 for top.
+    </div>
+    
+    <!-- SECTION 5: INTERACTIONS -->
+    <h2 id="interactions">5. Interactions & Events</h2>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Enable/Disable Interactions</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'interactions-basic')">Copy</button>
+      </div>
+      <pre><code id="interactions-basic"><span class="keyword">const</span> map = <span class="keyword">new</span> <span class="function">InteractiveMap</span>(<span class="string">'mapContainer'</span>, {
+  <span class="property">enableClick</span>: <span class="keyword">true</span>,      <span class="comment">// Allow clicking countries/markers</span>
+  <span class="property">enableZoom</span>: <span class="keyword">true</span>,       <span class="comment">// Allow zoom in/out</span>
+  <span class="property">enablePan</span>: <span class="keyword">true</span>,        <span class="comment">// Allow dragging/panning</span>
+  <span class="property">enableHover</span>: <span class="keyword">true</span>,      <span class="comment">// Show hover tooltips</span>
+  <span class="property">enableSearch</span>: <span class="keyword">false</span>,    <span class="comment">// Country search box</span>
+  <span class="property">enableAnimation</span>: <span class="keyword">false</span>, <span class="comment">// Smooth transitions</span>
+  <span class="property">animationDuration</span>: <span class="number">500</span>  <span class="comment">// Animation speed in ms</span>
+});</code></pre>
+    </div>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Event Handlers</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'interactions-events')">Copy</button>
+      </div>
+      <pre><code id="interactions-events"><span class="comment">// Country click event</span>
+map.<span class="function">on</span>(<span class="string">'countryClick'</span>, (country) => {
+  <span class="function">console.log</span>(<span class="string">'Country:'</span>, country.name);
+  <span class="function">console.log</span>(<span class="string">'ISO Code:'</span>, country.country);
+  <span class="function">console.log</span>(<span class="string">'Value:'</span>, country.value);
+  <span class="function">alert</span>(<span class="string">`You clicked </span><span class="keyword">${</span>country.name<span class="keyword">}</span><span class="string">`</span>);
+});
+
+<span class="comment">// Marker/scatter point click</span>
+map.<span class="function">on</span>(<span class="string">'markerClick'</span>, (marker) => {
+  <span class="function">console.log</span>(<span class="string">'Location:'</span>, marker.label);
+  <span class="function">console.log</span>(<span class="string">'Coords:'</span>, marker.lat, marker.lon);
+  <span class="function">alert</span>(<span class="string">`Marker: </span><span class="keyword">${</span>marker.label<span class="keyword">}</span><span class="string">`</span>);
+});
+
+<span class="comment">// Country hover event</span>
+map.<span class="function">on</span>(<span class="string">'countryHover'</span>, (country) => {
+  <span class="function">console.log</span>(<span class="string">'Hovering:'</span>, country.name);
+});
+
+<span class="comment">// Marker hover event</span>
+map.<span class="function">on</span>(<span class="string">'markerHover'</span>, (marker) => {
+  <span class="function">console.log</span>(<span class="string">'Hovering marker:'</span>, marker.label);
+});
+
+<span class="comment">// Theme change event</span>
+map.<span class="function">on</span>(<span class="string">'themeChange'</span>, (theme) => {
+  <span class="function">console.log</span>(<span class="string">'Theme changed to:'</span>, theme);
+  document.body.className = theme;
+});</code></pre>
+    </div>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Programmatic Control</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'interactions-control')">Copy</button>
+      </div>
+      <pre><code id="interactions-control"><span class="comment">// Update configuration after initialization</span>
+map.<span class="function">updateConfig</span>({
+  <span class="property">theme</span>: <span class="string">'dark'</span>,
+  <span class="property">projection</span>: <span class="string">'natural earth'</span>
+});
+<span class="keyword">await</span> map.<span class="function">render</span>();
+
+<span class="comment">// Change theme programmatically</span>
+<span class="keyword">await</span> map.<span class="function">setTheme</span>(<span class="string">'dark'</span>);
+
+<span class="comment">// Filter/search countries</span>
+map.<span class="function">filterCountries</span>(<span class="string">'United'</span>);  <span class="comment">// Show only matching countries</span>
+map.<span class="function">clearFilters</span>();             <span class="comment">// Reset filters</span>
+
+<span class="comment">// Destroy map instance</span>
+map.<span class="function">destroy</span>();</code></pre>
+    </div>
+    
+    <!-- SECTION 6: ADVANCED -->
+    <h2 id="advanced">6. Advanced Configuration</h2>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Complete Configuration Example</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'advanced-complete')">Copy</button>
+      </div>
+      <pre><code id="advanced-complete"><span class="keyword">const</span> map = <span class="keyword">new</span> <span class="function">InteractiveMap</span>(<span class="string">'mapContainer'</span>, {
+  <span class="comment">// Basic Settings</span>
+  <span class="property">chartTitle</span>: <span class="string">'Global Performance Dashboard'</span>,
+  <span class="property">description</span>: <span class="string">'Real-time data across 150+ countries'</span>,
+  <span class="property">theme</span>: <span class="string">'light'</span>,
+  <span class="property">projection</span>: <span class="string">'miller'</span>,
+  <span class="property">width</span>: <span class="keyword">null</span>,          <span class="comment">// Use responsive mode</span>
+  <span class="property">height</span>: <span class="keyword">null</span>,
+  <span class="property">responsive</span>: <span class="keyword">true</span>,
+  
+  <span class="comment">// Visibility</span>
+  <span class="property">hideHeader</span>: <span class="keyword">false</span>,
+  <span class="property">hideDescription</span>: <span class="keyword">false</span>,
+  <span class="property">hideCaptions</span>: <span class="keyword">false</span>,
+  <span class="property">hideControls</span>: <span class="keyword">false</span>,
+  <span class="property">hideTableControl</span>: <span class="keyword">false</span>,
+  <span class="property">hideFullscreenControl</span>: <span class="keyword">false</span>,
+  <span class="property">hideDownloadControl</span>: <span class="keyword">false</span>,
+  <span class="property">hideLegend</span>: <span class="keyword">false</span>,
+  <span class="property">noBorder</span>: <span class="keyword">false</span>,
+  
+  <span class="comment">// Interactions</span>
+  <span class="property">enableClick</span>: <span class="keyword">true</span>,
+  <span class="property">enableZoom</span>: <span class="keyword">true</span>,
+  <span class="property">enablePan</span>: <span class="keyword">true</span>,
+  <span class="property">enableHover</span>: <span class="keyword">true</span>,
+  <span class="property">enableSearch</span>: <span class="keyword">true</span>,
+  <span class="property">enableAnimation</span>: <span class="keyword">true</span>,
+  <span class="property">animationDuration</span>: <span class="number">300</span>,
+  
+  <span class="comment">// Data Display</span>
+  <span class="property">dataLabelsVisible</span>: <span class="keyword">true</span>,
+  <span class="property">showCountryNames</span>: <span class="keyword">false</span>,
+  
+  <span class="comment">// Colors</span>
+  <span class="property">colors</span>: {
+    <span class="property">light</span>: {
+      <span class="property">scale</span>: [[<span class="number">0</span>, <span class="string">'#d4e9f5'</span>], [<span class="number">1</span>, <span class="string">'#2678b3'</span>]],
+      <span class="property">landDefault</span>: <span class="string">'#f3f7fa'</span>,
+      <span class="property">ocean</span>: <span class="string">'#ffffff'</span>,
+      <span class="property">scatterDefault</span>: <span class="string">'#2678b3'</span>,
+      <span class="property">scatterHighlight</span>: <span class="string">'#ff9800'</span>,
+      <span class="property">borders</span>: <span class="string">'white'</span>
+    }
+  },
+  
+  <span class="comment">// Colorbar</span>
+  <span class="property">colorbar</span>: {
+    <span class="property">orientation</span>: <span class="string">'h'</span>,    <span class="comment">// 'h' = horizontal, 'v' = vertical</span>
+    <span class="property">x</span>: <span class="number">0.85</span>,
+    <span class="property">y</span>: <span class="number">0.03</span>,
+    <span class="property">len</span>: <span class="number">0.25</span>,
+    <span class="property">thickness</span>: <span class="number">12</span>
+  },
+  
+  <span class="comment">// Legend/Table Options</span>
+  <span class="property">htmlLegendMaxHeight</span>: <span class="number">300</span>,
+  <span class="property">htmlLegendOptions</span>: {
+    <span class="property">position</span>: <span class="string">'bottom'</span>,     <span class="comment">// 'top', 'bottom', 'left', 'right'</span>
+    <span class="property">orientation</span>: <span class="string">'horizontal'</span>  <span class="comment">// 'horizontal', 'vertical'</span>
+  }
+});
+
+<span class="comment">// Load data and render</span>
+<span class="keyword">await</span> map.<span class="function">loadCountryData</span>(<span class="string">'country-data.json'</span>);
+<span class="keyword">await</span> map.<span class="function">loadScatterData</span>(<span class="string">'scatter-data.json'</span>);
+<span class="keyword">await</span> map.<span class="function">render</span>();
+
+<span class="comment">// Add event handlers</span>
+map.<span class="function">on</span>(<span class="string">'countryClick'</span>, (data) => {
+  <span class="function">console.log</span>(<span class="string">'Clicked:'</span>, data);
+});</code></pre>
+    </div>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Custom Tooltips</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'advanced-tooltips')">Copy</button>
+      </div>
+      <pre><code id="advanced-tooltips"><span class="keyword">const</span> map = <span class="keyword">new</span> <span class="function">InteractiveMap</span>(<span class="string">'mapContainer'</span>, {
+  <span class="comment">// Custom hover tooltip template</span>
+  <span class="property">tooltipTemplate</span>: <span class="string">'&lt;b&gt;%{text}&lt;/b&gt;&lt;br&gt;Score: %{z}%&lt;br&gt;Rank: #%{customdata}&lt;extra&gt;&lt;/extra&gt;'</span>,
+  
+  <span class="comment">// Custom labels for countries</span>
+  <span class="property">customLabels</span>: {
+    <span class="string">'USA'</span>: <span class="string">'United States of America'</span>,
+    <span class="string">'GBR'</span>: <span class="string">'United Kingdom'</span>,
+    <span class="string">'CHN'</span>: <span class="string">'People\'s Republic of China'</span>
+  }
+});</code></pre>
+    </div>
+    
+    <!-- SECTION 7: ALL OPTIONS -->
+    <h2 id="all-options">7. All Configuration Options Reference</h2>
+    
+    <table class="config-table">
+      <thead>
+        <tr>
+          <th>Option</th>
+          <th>Type</th>
+          <th>Default</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>chartTitle</td>
+          <td>string</td>
+          <td>''</td>
+          <td>Main title displayed at the top</td>
+        </tr>
+        <tr>
+          <td>description</td>
+          <td>string</td>
+          <td>''</td>
+          <td>Description text below title</td>
+        </tr>
+        <tr>
+          <td>theme</td>
+          <td>string</td>
+          <td>'light'</td>
+          <td>Color theme: 'light' or 'dark'</td>
+        </tr>
+        <tr>
+          <td>projection</td>
+          <td>string</td>
+          <td>'miller'</td>
+          <td>Map projection: 'miller', 'equirectangular', 'mercator', 'natural earth'</td>
+        </tr>
+        <tr>
+          <td>width</td>
+          <td>number|null</td>
+          <td>null</td>
+          <td>Fixed width in pixels (null = responsive)</td>
+        </tr>
+        <tr>
+          <td>height</td>
+          <td>number|null</td>
+          <td>null</td>
+          <td>Fixed height in pixels (null = responsive)</td>
+        </tr>
+        <tr>
+          <td>hideHeader</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Hide the chart title</td>
+        </tr>
+        <tr>
+          <td>hideDescription</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Hide the description text</td>
+        </tr>
+        <tr>
+          <td>hideCaptions</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Hide all caption elements</td>
+        </tr>
+        <tr>
+          <td>hideControls</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Hide all control buttons</td>
+        </tr>
+        <tr>
+          <td>hideTableControl</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Hide table view toggle button</td>
+        </tr>
+        <tr>
+          <td>hideFullscreenControl</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Hide fullscreen button</td>
+        </tr>
+        <tr>
+          <td>hideDownloadControl</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Hide download/export button</td>
+        </tr>
+        <tr>
+          <td>hideLegend</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Hide the colorbar legend</td>
+        </tr>
+        <tr>
+          <td>noBorder</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Remove border around map</td>
+        </tr>
+        <tr>
+          <td>enableClick</td>
+          <td>boolean</td>
+          <td>true</td>
+          <td>Allow clicking on countries/markers</td>
+        </tr>
+        <tr>
+          <td>enableZoom</td>
+          <td>boolean</td>
+          <td>true</td>
+          <td>Allow zoom in/out</td>
+        </tr>
+        <tr>
+          <td>enablePan</td>
+          <td>boolean</td>
+          <td>true</td>
+          <td>Allow panning/dragging</td>
+        </tr>
+        <tr>
+          <td>enableHover</td>
+          <td>boolean</td>
+          <td>true</td>
+          <td>Show hover tooltips</td>
+        </tr>
+        <tr>
+          <td>responsive</td>
+          <td>boolean</td>
+          <td>true</td>
+          <td>Auto-resize to fit container</td>
+        </tr>
+        <tr>
+          <td>enableSearch</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Show country search box</td>
+        </tr>
+        <tr>
+          <td>enableAnimation</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Enable smooth animations</td>
+        </tr>
+        <tr>
+          <td>animationDuration</td>
+          <td>number</td>
+          <td>500</td>
+          <td>Animation speed in milliseconds</td>
+        </tr>
+        <tr>
+          <td>dataLabelsVisible</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Show labels on scatter markers</td>
+        </tr>
+        <tr>
+          <td>showCountryNames</td>
+          <td>boolean</td>
+          <td>false</td>
+          <td>Display country names on map</td>
+        </tr>
+        <tr>
+          <td>colors</td>
+          <td>object</td>
+          <td>See code</td>
+          <td>Color scheme for light/dark themes</td>
+        </tr>
+        <tr>
+          <td>colorbar.orientation</td>
+          <td>string</td>
+          <td>'h'</td>
+          <td>Colorbar orientation: 'h' (horizontal) or 'v' (vertical)</td>
+        </tr>
+        <tr>
+          <td>colorbar.x</td>
+          <td>number</td>
+          <td>0.85</td>
+          <td>Horizontal position (0-1)</td>
+        </tr>
+        <tr>
+          <td>colorbar.y</td>
+          <td>number</td>
+          <td>0.03</td>
+          <td>Vertical position (0-1)</td>
+        </tr>
+        <tr>
+          <td>colorbar.len</td>
+          <td>number</td>
+          <td>0.25</td>
+          <td>Length relative to map size (0-1)</td>
+        </tr>
+        <tr>
+          <td>colorbar.thickness</td>
+          <td>number</td>
+          <td>12</td>
+          <td>Thickness in pixels</td>
+        </tr>
+        <tr>
+          <td>htmlLegendMaxHeight</td>
+          <td>number</td>
+          <td>300</td>
+          <td>Max height of legend in pixels</td>
+        </tr>
+        <tr>
+          <td>htmlLegendOptions.position</td>
+          <td>string</td>
+          <td>'bottom'</td>
+          <td>Legend position: 'top', 'bottom', 'left', 'right'</td>
+        </tr>
+        <tr>
+          <td>htmlLegendOptions.orientation</td>
+          <td>string</td>
+          <td>'horizontal'</td>
+          <td>Legend orientation: 'horizontal' or 'vertical'</td>
+        </tr>
+        <tr>
+          <td>tooltipTemplate</td>
+          <td>string</td>
+          <td>Default</td>
+          <td>Custom tooltip HTML template</td>
+        </tr>
+        <tr>
+          <td>customLabels</td>
+          <td>object</td>
+          <td>{}</td>
+          <td>Custom display names for country codes</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="note">
+      <strong>Need Help?</strong> Open <a href="demo.html" style="color: #29707A;">demo.html</a> to interactively experiment with all these options. 
+      Check <a href="README.md" style="color: #29707A;">README.md</a> for detailed documentation.
+    </div>
+    
+    <div style="height: 40px;"></div>
+  </div>
+  
+  <script>
+    function copyCode(button, elementId) {
+      const codeElement = document.getElementById(elementId);
+      const code = codeElement.textContent;
+      
+      navigator.clipboard.writeText(code).then(() => {
+        button.textContent = 'Copied!';
+        button.classList.add('copied');
+        
+        setTimeout(() => {
+          button.textContent = 'Copy';
+          button.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
