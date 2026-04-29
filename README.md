@@ -4,6 +4,8 @@ An interactive, customizable world map library built with Plotly.js that provide
 
 ![Interactive World Map Screenshot](https://raw.githubusercontent.com/ehteshamnasim/interactive-world-map/main/screenshot.png)
 
+**[ View Live Demo](https://world-map-woad-three.vercel.app/)**
+
 ## Features
 
 - **Choropleth Visualization**: Color-coded countries based on data values
@@ -459,6 +461,8 @@ The map uses ISO 3166-1 alpha-3 country codes. Common examples:
 For a complete list, see [ISO 3166-1 alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3).
 
 ## Demo
+
+**[Try the Live Demo](https://world-map-woad-three.vercel.app/)** - Interactive configuration panel with all features
 
 The package includes a demo file (`demo.html`) that provides a full interactive configuration panel. Open it in a browser to:
 
