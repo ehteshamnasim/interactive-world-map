@@ -7,9 +7,16 @@ An interactive, customizable world map library built with Plotly.js that provide
 - **Choropleth Visualization**: Color-coded countries based on data values
 - **Bubble Markers**: Add markers with custom sizes and hover text for specific locations
 - **Customizable Colors**: Configure min/max colors, land default color, and water color
+- **Color Presets**: 6 built-in color themes (blue, green, red, purple, orange, teal)
 - **Interactive Legend**: Vertical color legend bar with configurable position and size
 - **Responsive Design**: Full viewport fit with no scrolling
 - **Real-time Controls**: Live configuration panel to adjust map settings
+- **TypeScript Support**: Full TypeScript definitions included
+- **Data Loading**: Load from URLs, JSON objects, or use country names
+- **Data Validation**: Automatic validation of country codes
+- **Country Name Resolution**: Use country names instead of ISO codes
+- **Event System**: Callbacks for clicks, hovers, data updates, and errors
+- **Utility Functions**: Helper functions for data manipulation
 - **No Zoom**: Clean, fixed view without zoom interactions
 
 ## Installation
@@ -98,6 +105,73 @@ const map = new InteractiveMap(config);
 map.render(data);
 ```
 
+### Loading Data from URL
+
+```javascript
+const map = new InteractiveMap('map-container', config);
+
+// Load from JSON file
+await map.loadData({
+  url: 'https://example.com/country-data.json',
+  validateCodes: true
+});
+
+// Or load from object with country names
+await map.loadData({
+  data: {
+    'United States': 100,
+    'United Kingdom': 80,
+    'France': 75
+  },
+  useCountryNames: true
+});
+```
+
+### Using Color Presets
+
+```javascript
+const map = new InteractiveMap('map-container');
+map.render(data);
+
+// Apply a color preset
+map.applyColorPreset('green');  // Options: blue, green, red, purple, orange, teal
+
+// Or get all presets
+const presets = InteractiveMap.getColorPresets();
+```
+
+### Event Callbacks
+
+```javascript
+map.setCallbacks({
+  onLoad: () => console.log('Map loaded!'),
+  onDataUpdate: (data) => console.log('Data updated:', data),
+  onError: (error) => console.error('Error:', error),
+  onCountryClick: (code, value) => console.log(`Clicked ${code}: ${value}`)
+});
+```
+
+### Using Utility Functions
+
+```javascript
+// Generate sample data for testing
+const sampleData = MapUtils.generateSampleData(20);
+map.render(sampleData);
+
+// Generate sample markers
+const markers = MapUtils.generateSampleMarkers(5);
+map.updateMarkers(markers);
+
+// Get top 10 countries
+const topCountries = MapUtils.getTopCountries(data, 10);
+
+// Normalize values to 0-100 range
+const normalized = MapUtils.normalizeValues(data);
+
+// Filter by region
+const europeData = MapUtils.filterByRegion(data, 'europe');
+```
+
 ## Configuration Options
 
 ### Basic Configuration
@@ -175,6 +249,194 @@ const markers = [
 ];
 
 map.render(data, markers);
+```
+
+##### loadData(options)
+
+```javascript
+await map.loadData(options)
+```
+
+Load data from a URL or object with optional validation and conversion.
+
+**Parameters:**
+- `options` (Object):
+  - `url` (string, optional): URL to load JSON data from
+  - `data` (Object, optional): Data object to load directly
+  - `useCountryNames` (boolean, optional): Convert country names to ISO codes
+  - `validateCodes` (boolean, optional): Validate country codes (default: true)
+  - `markers` (Array, optional): Markers to display
+
+**Example:**
+```javascript
+await map.loadData({
+  url: 'data.json',
+  validateCodes: true
+});
+```
+
+##### updateData(data)
+
+```javascript
+map.updateData(data)
+```
+
+Update map data without full re-initialization.
+
+**Parameters:**
+- `data` (Object): New country data
+
+##### updateMarkers(markers)
+
+```javascript
+map.updateMarkers(markers)
+```
+
+Update or add markers to the map.
+
+**Parameters:**
+- `markers` (Array): Array of marker objects
+
+##### setCallbacks(callbacks)
+
+```javascript
+map.setCallbacks(callbacks)
+```
+
+Set event callback functions.
+
+**Parameters:**
+- `callbacks` (Object): Object with callback functions
+  - `onLoad`: Called when map finishes loading
+  - `onDataUpdate`: Called when data is updated
+  - `onError`: Called on errors
+  - `onCountryClick`: Called when country is clicked
+  - `onMarkerClick`: Called when marker is clicked
+
+##### setTheme(theme)
+
+```javascript
+map.setTheme(theme)
+```
+
+Change the map theme.
+
+**Parameters:**
+- `theme` (string): 'light' or 'dark'
+
+##### applyColorPreset(preset)
+
+```javascript
+map.applyColorPreset(preset)
+```
+
+Apply a built-in color preset or custom preset.
+
+**Parameters:**
+- `preset` (string|Object): Preset name ('blue', 'green', 'red', 'purple', 'orange', 'teal') or preset object
+
+##### validateCountryCodes(data)
+
+```javascript
+const invalid = map.validateCountryCodes(data)
+```
+
+Validate country codes in data.
+
+**Parameters:**
+- `data` (Object): Country data to validate
+
+**Returns:** Array of invalid country codes
+
+### Static Methods
+
+##### InteractiveMap.countryNameToCode(name)
+
+```javascript
+const code = InteractiveMap.countryNameToCode('United States');
+// Returns: 'USA'
+```
+
+Convert country name to ISO 3-letter code.
+
+**Parameters:**
+- `name` (string): Country name
+
+**Returns:** ISO code or null if not found
+
+##### InteractiveMap.getColorPresets()
+
+```javascript
+const presets = InteractiveMap.getColorPresets();
+```
+
+Get all available color presets.
+
+**Returns:** Array of color preset objects
+
+## MapUtils Helper Library
+
+The package includes `map-utils.js` with helpful functions for data manipulation:
+
+### Available Functions
+
+#### generateSampleData(countries)
+Generate random sample data for testing.
+
+```javascript
+const data = MapUtils.generateSampleData(20);  // 20 random countries
+```
+
+#### generateSampleMarkers(count)
+Generate random markers for testing.
+
+```javascript
+const markers = MapUtils.generateSampleMarkers(5);  // 5 random city markers
+```
+
+#### csvToMapData(csv)
+Convert CSV string to map data format.
+
+```javascript
+const csv = `code,value
+USA,100
+GBR,80`;
+const data = MapUtils.csvToMapData(csv);
+```
+
+#### getTopCountries(data, n)
+Get top N countries by value.
+
+```javascript
+const top10 = MapUtils.getTopCountries(data, 10);
+```
+
+#### normalizeValues(data)
+Normalize all values to 0-100 range.
+
+```javascript
+const normalized = MapUtils.normalizeValues(data);
+```
+
+#### filterByRegion(data, region)
+Filter countries by region. Available regions: `north-america`, `south-america`, `europe`, `asia`, `middle-east`, `africa`, `oceania`.
+
+```javascript
+const europeOnly = MapUtils.filterByRegion(data, 'europe');
+```
+
+#### mergeData(datasets, method)
+Merge multiple datasets using different methods: `sum`, `average`, `max`, `min`.
+
+```javascript
+const merged = MapUtils.mergeData([data1, data2, data3], 'average');
+```
+
+#### sortByValue(data, ascending)
+Sort countries by value.
+
+```javascript
+const sorted = MapUtils.sortByValue(data, false);  // Descending order
 ```
 
 ## Country Codes

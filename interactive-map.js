@@ -112,7 +112,10 @@
         onThemeChange: null,
         onDownload: null,
         onFullscreen: null,
-        onTableToggle: null
+        onTableToggle: null,
+        onLoad: null,
+        onError: null,
+        onDataUpdate: null
       };
 
       this._isFullscreen = false;
@@ -903,6 +906,236 @@
       return {
         countries: JSON.parse(JSON.stringify(this.countryData)),
         markers: JSON.parse(JSON.stringify(this.scatterData))
+      };
+    }
+
+    async loadData(options = {}) {
+      try {
+        let data = options.data;
+        
+        if (options.url) {
+          const response = await fetch(options.url);
+          if (!response.ok) {
+            throw new Error(`Failed to load data: ${response.statusText}`);
+          }
+          data = await response.json();
+        }
+        
+        if (!data) {
+          throw new Error('No data provided');
+        }
+        
+        if (options.useCountryNames) {
+          const convertedData = {};
+          for (const [key, value] of Object.entries(data)) {
+            const code = InteractiveMap.countryNameToCode(key);
+            if (code) {
+              convertedData[code] = value;
+            } else {
+              console.warn(`Unknown country name: ${key}`);
+            }
+          }
+          data = convertedData;
+        }
+        
+        if (options.validateCodes !== false) {
+          const invalid = this.validateCountryCodes(data);
+          if (invalid.length > 0) {
+            console.warn('Invalid country codes found:', invalid);
+          }
+        }
+        
+        await this.render(data, options.markers);
+        
+        if (this.callbacks.onDataUpdate) {
+          this.callbacks.onDataUpdate(data);
+        }
+        if (this.callbacks.onLoad) {
+          this.callbacks.onLoad();
+        }
+        
+        return this;
+      } catch (error) {
+        if (this.callbacks.onError) {
+          this.callbacks.onError(error);
+        }
+        throw error;
+      }
+    }
+
+    updateData(data) {
+      this.setCountryData(data);
+      this.render(data);
+      if (this.callbacks.onDataUpdate) {
+        this.callbacks.onDataUpdate(data);
+      }
+      return this;
+    }
+
+    updateMarkers(markers) {
+      this.setScatterData(markers);
+      this.render(null, markers);
+      return this;
+    }
+
+    setCallbacks(callbacks) {
+      this.callbacks = { ...this.callbacks, ...callbacks };
+      return this;
+    }
+
+    setTheme(theme) {
+      if (theme !== 'light' && theme !== 'dark') {
+        throw new Error('Theme must be "light" or "dark"');
+      }
+      this.config.theme = theme;
+      this.container.classList.remove('theme-light', 'theme-dark');
+      this.container.classList.add(`theme-${theme}`);
+      this.render();
+      if (this.callbacks.onThemeChange) {
+        this.callbacks.onThemeChange(theme);
+      }
+      return this;
+    }
+
+    applyColorPreset(preset) {
+      const presetObj = typeof preset === 'string' 
+        ? InteractiveMap.getColorPresets().find(p => p.name === preset)
+        : preset;
+      
+      if (!presetObj) {
+        throw new Error(`Color preset not found: ${preset}`);
+      }
+      
+      this.config.colors.light.scale[0][1] = presetObj.minColor;
+      this.config.colors.light.scale[3][1] = presetObj.maxColor;
+      this.config.colors.light.landDefault = presetObj.landDefaultColor;
+      this.config.colors.light.ocean = presetObj.waterColor;
+      
+      this.render();
+      return this;
+    }
+
+    validateCountryCodes(data) {
+      const validCodes = InteractiveMap._getValidCountryCodes();
+      const invalid = [];
+      
+      for (const code of Object.keys(data)) {
+        if (!validCodes.includes(code.toUpperCase())) {
+          invalid.push(code);
+        }
+      }
+      
+      return invalid;
+    }
+
+    static countryNameToCode(name) {
+      const mapping = InteractiveMap._getCountryNameMapping();
+      const normalized = name.toLowerCase().trim();
+      return mapping[normalized] || null;
+    }
+
+    static getColorPresets() {
+      return [
+        {
+          name: 'blue',
+          minColor: '#8db5d5',
+          maxColor: '#0d5592',
+          landDefaultColor: '#e0e8f0',
+          waterColor: '#a8c5dd'
+        },
+        {
+          name: 'green',
+          minColor: '#a8d5a8',
+          maxColor: '#1a7a1a',
+          landDefaultColor: '#e8f0e8',
+          waterColor: '#c5ddc5'
+        },
+        {
+          name: 'red',
+          minColor: '#f5a5a5',
+          maxColor: '#b71c1c',
+          landDefaultColor: '#f5e8e8',
+          waterColor: '#f5d5d5'
+        },
+        {
+          name: 'purple',
+          minColor: '#d5b5d5',
+          maxColor: '#6a1b9a',
+          landDefaultColor: '#f0e8f0',
+          waterColor: '#ddc5dd'
+        },
+        {
+          name: 'orange',
+          minColor: '#ffd9a0',
+          maxColor: '#e65100',
+          landDefaultColor: '#fff5e8',
+          waterColor: '#ffe5c5'
+        },
+        {
+          name: 'teal',
+          minColor: '#80deea',
+          maxColor: '#00695c',
+          landDefaultColor: '#e0f2f1',
+          waterColor: '#b2dfdb'
+        }
+      ];
+    }
+
+    static _getValidCountryCodes() {
+      return ['AFG','ALB','DZA','AND','AGO','ATG','ARG','ARM','AUS','AUT','AZE','BHS','BHR','BGD','BRB','BLR','BEL','BLZ','BEN','BTN','BOL','BIH','BWA','BRA','BRN','BGR','BFA','BDI','CPV','KHM','CMR','CAN','CAF','TCD','CHL','CHN','COL','COM','COG','COD','CRI','CIV','HRV','CUB','CYP','CZE','DNK','DJI','DMA','DOM','ECU','EGY','SLV','GNQ','ERI','EST','SWZ','ETH','FJI','FIN','FRA','GAB','GMB','GEO','DEU','GHA','GRC','GRD','GTM','GIN','GNB','GUY','HTI','HND','HUN','ISL','IND','IDN','IRN','IRQ','IRL','ISR','ITA','JAM','JPN','JOR','KAZ','KEN','KIR','PRK','KOR','KWT','KGZ','LAO','LVA','LBN','LSO','LBR','LBY','LIE','LTU','LUX','MDG','MWI','MYS','MDV','MLI','MLT','MHL','MRT','MUS','MEX','FSM','MDA','MCO','MNG','MNE','MAR','MOZ','MMR','NAM','NRU','NPL','NLD','NZL','NIC','NER','NGA','MKD','NOR','OMN','PAK','PLW','PAN','PNG','PRY','PER','PHL','POL','PRT','QAT','ROU','RUS','RWA','KNA','LCA','VCT','WSM','SMR','STP','SAU','SEN','SRB','SYC','SLE','SGP','SVK','SVN','SLB','SOM','ZAF','SSD','ESP','LKA','SDN','SUR','SWE','CHE','SYR','TJK','TZA','THA','TLS','TGO','TON','TTO','TUN','TUR','TKM','TUV','UGA','UKR','ARE','GBR','USA','URY','UZB','VUT','VEN','VNM','YEM','ZMB','ZWE'];
+    }
+
+    static _getCountryNameMapping() {
+      return {
+        'afghanistan': 'AFG', 'albania': 'ALB', 'algeria': 'DZA', 'andorra': 'AND',
+        'angola': 'AGO', 'antigua and barbuda': 'ATG', 'argentina': 'ARG', 'armenia': 'ARM',
+        'australia': 'AUS', 'austria': 'AUT', 'azerbaijan': 'AZE', 'bahamas': 'BHS',
+        'bahrain': 'BHR', 'bangladesh': 'BGD', 'barbados': 'BRB', 'belarus': 'BLR',
+        'belgium': 'BEL', 'belize': 'BLZ', 'benin': 'BEN', 'bhutan': 'BTN',
+        'bolivia': 'BOL', 'bosnia and herzegovina': 'BIH', 'botswana': 'BWA', 'brazil': 'BRA',
+        'brunei': 'BRN', 'bulgaria': 'BGR', 'burkina faso': 'BFA', 'burundi': 'BDI',
+        'cabo verde': 'CPV', 'cambodia': 'KHM', 'cameroon': 'CMR', 'canada': 'CAN',
+        'central african republic': 'CAF', 'chad': 'TCD', 'chile': 'CHL', 'china': 'CHN',
+        'colombia': 'COL', 'comoros': 'COM', 'congo': 'COG', 'costa rica': 'CRI',
+        'croatia': 'HRV', 'cuba': 'CUB', 'cyprus': 'CYP', 'czech republic': 'CZE',
+        'democratic republic of the congo': 'COD', 'denmark': 'DNK', 'djibouti': 'DJI',
+        'dominica': 'DMA', 'dominican republic': 'DOM', 'ecuador': 'ECU', 'egypt': 'EGY',
+        'el salvador': 'SLV', 'equatorial guinea': 'GNQ', 'eritrea': 'ERI', 'estonia': 'EST',
+        'eswatini': 'SWZ', 'ethiopia': 'ETH', 'fiji': 'FJI', 'finland': 'FIN',
+        'france': 'FRA', 'gabon': 'GAB', 'gambia': 'GMB', 'georgia': 'GEO',
+        'germany': 'DEU', 'ghana': 'GHA', 'greece': 'GRC', 'grenada': 'GRD',
+        'guatemala': 'GTM', 'guinea': 'GIN', 'guinea-bissau': 'GNB', 'guyana': 'GUY',
+        'haiti': 'HTI', 'honduras': 'HND', 'hungary': 'HUN', 'iceland': 'ISL',
+        'india': 'IND', 'indonesia': 'IDN', 'iran': 'IRN', 'iraq': 'IRQ',
+        'ireland': 'IRL', 'israel': 'ISR', 'italy': 'ITA', 'jamaica': 'JAM',
+        'japan': 'JPN', 'jordan': 'JOR', 'kazakhstan': 'KAZ', 'kenya': 'KEN',
+        'kiribati': 'KIR', 'north korea': 'PRK', 'south korea': 'KOR', 'kuwait': 'KWT',
+        'kyrgyzstan': 'KGZ', 'laos': 'LAO', 'latvia': 'LVA', 'lebanon': 'LBN',
+        'lesotho': 'LSO', 'liberia': 'LBR', 'libya': 'LBY', 'liechtenstein': 'LIE',
+        'lithuania': 'LTU', 'luxembourg': 'LUX', 'madagascar': 'MDG', 'malawi': 'MWI',
+        'malaysia': 'MYS', 'maldives': 'MDV', 'mali': 'MLI', 'malta': 'MLT',
+        'marshall islands': 'MHL', 'mauritania': 'MRT', 'mauritius': 'MUS', 'mexico': 'MEX',
+        'micronesia': 'FSM', 'moldova': 'MDA', 'monaco': 'MCO', 'mongolia': 'MNG',
+        'montenegro': 'MNE', 'morocco': 'MAR', 'mozambique': 'MOZ', 'myanmar': 'MMR',
+        'namibia': 'NAM', 'nauru': 'NRU', 'nepal': 'NPL', 'netherlands': 'NLD',
+        'new zealand': 'NZL', 'nicaragua': 'NIC', 'niger': 'NER', 'nigeria': 'NGA',
+        'north macedonia': 'MKD', 'norway': 'NOR', 'oman': 'OMN', 'pakistan': 'PAK',
+        'palau': 'PLW', 'panama': 'PAN', 'papua new guinea': 'PNG', 'paraguay': 'PRY',
+        'peru': 'PER', 'philippines': 'PHL', 'poland': 'POL', 'portugal': 'PRT',
+        'qatar': 'QAT', 'romania': 'ROU', 'russia': 'RUS', 'rwanda': 'RWA',
+        'saint kitts and nevis': 'KNA', 'saint lucia': 'LCA', 'saint vincent and the grenadines': 'VCT',
+        'samoa': 'WSM', 'san marino': 'SMR', 'sao tome and principe': 'STP', 'saudi arabia': 'SAU',
+        'senegal': 'SEN', 'serbia': 'SRB', 'seychelles': 'SYC', 'sierra leone': 'SLE',
+        'singapore': 'SGP', 'slovakia': 'SVK', 'slovenia': 'SVN', 'solomon islands': 'SLB',
+        'somalia': 'SOM', 'south africa': 'ZAF', 'south sudan': 'SSD', 'spain': 'ESP',
+        'sri lanka': 'LKA', 'sudan': 'SDN', 'suriname': 'SUR', 'sweden': 'SWE',
+        'switzerland': 'CHE', 'syria': 'SYR', 'tajikistan': 'TJK', 'tanzania': 'TZA',
+        'thailand': 'THA', 'timor-leste': 'TLS', 'togo': 'TGO', 'tonga': 'TON',
+        'trinidad and tobago': 'TTO', 'tunisia': 'TUN', 'turkey': 'TUR', 'turkmenistan': 'TKM',
+        'tuvalu': 'TUV', 'uganda': 'UGA', 'ukraine': 'UKR', 'united arab emirates': 'ARE',
+        'united kingdom': 'GBR', 'uk': 'GBR', 'united states': 'USA', 'usa': 'USA', 'us': 'USA',
+        'uruguay': 'URY', 'uzbekistan': 'UZB', 'vanuatu': 'VUT', 'venezuela': 'VEN',
+        'vietnam': 'VNM', 'yemen': 'YEM', 'zambia': 'ZMB', 'zimbabwe': 'ZWE'
       };
     }
 

@@ -376,6 +376,12 @@
       
       <div class="section">
         <h3>Colors (Light Theme)</h3>
+        <p style="font-size: 12px; color: #666; margin-bottom: 12px; line-height: 1.5;">
+          <strong>Min/Max Color:</strong> Sets the gradient for countries<br>
+          <strong>Land Default:</strong> Countries with no data<br>
+          <strong>Ocean Color:</strong> Water/background color<br>
+          <strong>Bubble Color:</strong> The circular markers on cities
+        </p>
         
         <div class="color-inputs">
           <div class="control">
@@ -399,13 +405,8 @@
           </div>
           
           <div class="control">
-            <label>Marker Color</label>
+            <label>Bubble Color (on map)</label>
             <input type="color" id="markerColor" value="#5db8a8" onchange="updateConfig()">
-          </div>
-          
-          <div class="control">
-            <label>Highlight Color</label>
-            <input type="color" id="highlightColor" value="#ff9800" onchange="updateConfig()">
           </div>
         </div>
       </div>
@@ -512,22 +513,22 @@
     ];
     
     const sampleMarkers = [
-      { lon: -100, lat: 38, size: 120, color: '#5db8a8', label: 'New York' },
-      { lon: -115, lat: 62, size: 100, color: '#d4b85f', label: 'Vancouver' },
-      { lon: -3, lat: 51, size: 110, color: '#5db8a8', label: 'London' },
-      { lon: 2, lat: 48, size: 105, color: '#5db8a8', label: 'Paris' },
-      { lon: 139, lat: 35, size: 115, color: '#5db8a8', label: 'Tokyo' },
-      { lon: 151, lat: -33, size: 95, color: '#5db8a8', label: 'Sydney' },
-      { lon: -99, lat: 19, size: 100, color: '#5db8a8', label: 'Mexico City' },
-      { lon: -47, lat: -23, size: 110, color: '#5db8a8', label: 'São Paulo' },
-      { lon: 13, lat: 52, size: 105, color: '#5db8a8', label: 'Berlin' },
-      { lon: 37, lat: 55, size: 115, color: '#5db8a8', label: 'Moscow' },
-      { lon: 121, lat: 31, size: 120, color: '#5db8a8', label: 'Shanghai' },
-      { lon: 77, lat: 28, size: 110, color: '#5db8a8', label: 'New Delhi' },
-      { lon: -58, lat: -34, size: 95, color: '#5db8a8', label: 'Buenos Aires' },
-      { lon: 31, lat: 30, size: 100, color: '#5db8a8', label: 'Cairo' },
-      { lon: 103, lat: 1, size: 105, color: '#5db8a8', label: 'Singapore' },
-      { lon: 18, lat: -33, size: 95, color: '#5db8a8', label: 'Cape Town' }
+      { lon: -100, lat: 38, size: 120, label: 'New York' },
+      { lon: -115, lat: 62, size: 100, label: 'Vancouver' },
+      { lon: -3, lat: 51, size: 110, label: 'London' },
+      { lon: 2, lat: 48, size: 105, label: 'Paris' },
+      { lon: 139, lat: 35, size: 115, label: 'Tokyo' },
+      { lon: 151, lat: -33, size: 95, label: 'Sydney' },
+      { lon: -99, lat: 19, size: 100, label: 'Mexico City' },
+      { lon: -47, lat: -23, size: 110, label: 'São Paulo' },
+      { lon: 13, lat: 52, size: 105, label: 'Berlin' },
+      { lon: 37, lat: 55, size: 115, label: 'Moscow' },
+      { lon: 121, lat: 31, size: 120, label: 'Shanghai' },
+      { lon: 77, lat: 28, size: 110, label: 'New Delhi' },
+      { lon: -58, lat: -34, size: 95, label: 'Buenos Aires' },
+      { lon: 31, lat: 30, size: 100, label: 'Cairo' },
+      { lon: 103, lat: 1, size: 105, label: 'Singapore' },
+      { lon: 18, lat: -33, size: 95, label: 'Cape Town' }
     ];
     
     async function initMap() {
@@ -631,16 +632,13 @@
         
         colors: {
           light: {
-            scale: [
-              [0, document.getElementById('colorMin').value || '#8db5d5'],
-              [0.35, '#5a9fce'],
-              [0.65, '#2b7ab8'],
-              [1, document.getElementById('colorMax').value || '#0d5592']
-            ],
+            scale: generateColorScale(
+              document.getElementById('colorMin').value || '#8db5d5',
+              document.getElementById('colorMax').value || '#0d5592'
+            ),
             landDefault: document.getElementById('landDefault').value || '#e0e8f0',
             ocean: document.getElementById('oceanColor').value || '#ffffff',
             scatterDefault: document.getElementById('markerColor').value || '#5db8a8',
-            scatterHighlight: document.getElementById('highlightColor').value || '#ff9800',
             borders: 'white'
           },
           dark: {
@@ -670,6 +668,34 @@
     
     function updateConfig() {
       console.log('Config updated');
+    }
+    
+    function interpolateColor(color1, color2, factor) {
+      const c1 = parseInt(color1.slice(1), 16);
+      const c2 = parseInt(color2.slice(1), 16);
+      
+      const r1 = (c1 >> 16) & 0xff;
+      const g1 = (c1 >> 8) & 0xff;
+      const b1 = c1 & 0xff;
+      
+      const r2 = (c2 >> 16) & 0xff;
+      const g2 = (c2 >> 8) & 0xff;
+      const b2 = c2 & 0xff;
+      
+      const r = Math.round(r1 + (r2 - r1) * factor);
+      const g = Math.round(g1 + (g2 - g1) * factor);
+      const b = Math.round(b1 + (b2 - b1) * factor);
+      
+      return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+    
+    function generateColorScale(minColor, maxColor) {
+      return [
+        [0, minColor],
+        [0.35, interpolateColor(minColor, maxColor, 0.35)],
+        [0.65, interpolateColor(minColor, maxColor, 0.65)],
+        [1, maxColor]
+      ];
     }
     
     async function applyConfig() {
@@ -730,7 +756,6 @@
       document.getElementById('landDefault').value = '#f3f7fa';
       document.getElementById('oceanColor').value = '#ffffff';
       document.getElementById('markerColor').value = '#5db8a8';
-      document.getElementById('highlightColor').value = '#ff9800';
       
       document.getElementById('colorbarX').value = '0.5';
       document.getElementById('colorbarY').value = '0.02';

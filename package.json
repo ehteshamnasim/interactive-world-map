@@ -1,14 +1,21 @@
 {
   "name": "interactive-world-map",
   "version": "1.0.0",
-  "description": "Production-ready, advanced world map with Shidoka-inspired features: download controls, fullscreen, table view, search, filtering, custom palettes, animations, and dark theme",
+  "description": "Interactive world map with choropleth visualization, customizable colors, bubble markers, TypeScript support, and data utilities",
   "main": "interactive-map.js",
+  "types": "interactive-map.d.ts",
   "style": "interactive-map.css",
   "files": [
     "interactive-map.js",
+    "interactive-map.min.js",
     "interactive-map.css",
+    "interactive-map.min.css",
+    "interactive-map.d.ts",
+    "map-utils.js",
     "demo.html",
-    "examples.html"
+    "examples.html",
+    "LICENSE",
+    "README.md"
   ],
   "keywords": [
     "map",
@@ -20,7 +27,10 @@
     "dark theme",
     "responsive",
     "geographic visualization",
-    "typescript"
+    "typescript",
+    "bubble markers",
+    "data-viz",
+    "geo-map"
   ],
   "author": "Ehtesham Nasim",
   "license": "MIT",
@@ -36,8 +46,12 @@
     "plotly.js": "^2.27.0"
   },
   "scripts": {
-    "test": "echo \"No tests yet\"",
-    "example": "open index.html"
+    "demo": "open demo.html",
+    "examples": "open examples.html",
+    "build": "npm run build:js && npm run build:css",
+    "build:js": "terser interactive-map.js -c -m --comments false -o interactive-map.min.js",
+    "build:css": "csso interactive-map.css -o interactive-map.min.css",
+    "prepublishOnly": "npm run build"
   },
   "engines": {
     "node": ">=14.0.0"
