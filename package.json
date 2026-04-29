@@ -46,6 +46,10 @@
   "peerDependencies": {
     "plotly.js": "^2.27.0"
   },
+  "devDependencies": {
+    "csso-cli": "^4.0.2",
+    "terser": "^5.36.0"
+  },
   "scripts": {
     "demo": "open demo.html",
     "examples": "open examples.html",
