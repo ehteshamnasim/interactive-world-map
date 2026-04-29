@@ -2,6 +2,8 @@
 
 An interactive, customizable world map library built with Plotly.js that provides choropleth visualization with bubble markers, configurable color schemes, and real-time controls.
 
+![Interactive World Map Screenshot](screenshot.png)
+
 ## Features
 
 - **Choropleth Visualization**: Color-coded countries based on data values
@@ -30,9 +32,9 @@ npm install interactive-world-map
 ### Using CDN
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/interactive-world-map/interactive-map.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/interactive-world-map@1.0.0/interactive-map.min.css">
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/interactive-world-map/interactive-map.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/interactive-world-map@1.0.0/interactive-map.min.js"></script>
 ```
 
 ### Local Installation
