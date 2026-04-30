@@ -412,6 +412,16 @@
       </div>
       
       <div class="section">
+        <h3>Bubble Settings</h3>
+        
+        <div class="control">
+          <label>Bubble Size Multiplier</label>
+          <input type="range" id="bubbleSize" min="0.5" max="2" step="0.1" value="1" onchange="updateBubbleSize()" oninput="document.getElementById('bubbleSizeValue').textContent = this.value">
+          <span id="bubbleSizeValue" style="margin-left: 8px; font-weight: bold;">1</span>
+        </div>
+      </div>
+      
+      <div class="section">
         <h3>Color Legend Bar</h3>
         
         <div class="control">
@@ -696,6 +706,14 @@
         [0.65, interpolateColor(minColor, maxColor, 0.65)],
         [1, maxColor]
       ];
+    }
+    
+    function updateBubbleSize() {
+      const multiplier = parseFloat(document.getElementById('bubbleSize').value);
+      if (map) {
+        map.setBubbleSizeMultiplier(multiplier);
+        showMessage(`Bubble size updated to ${multiplier}x`, 'success');
+      }
     }
     
     async function applyConfig() {

@@ -155,6 +155,19 @@ map.setCallbacks({
 });
 ```
 
+### Adjusting Bubble Sizes
+
+```javascript
+// Make all bubbles 1.5x larger
+map.setBubbleSizeMultiplier(1.5);
+
+// Make bubbles smaller
+map.setBubbleSizeMultiplier(0.7);
+
+// Reset to original size
+map.setBubbleSizeMultiplier(1);
+```
+
 ### Using Utility Functions
 
 ```javascript
@@ -300,6 +313,26 @@ Update or add markers to the map.
 
 **Parameters:**
 - `markers` (Array): Array of marker objects
+
+##### setBubbleSizeMultiplier(multiplier)
+
+```javascript
+map.setBubbleSizeMultiplier(multiplier)
+```
+
+Adjust the size of all bubble markers by a multiplier.
+
+**Parameters:**
+- `multiplier` (number): Size multiplier (e.g., 1.5 for 150% size, 0.5 for 50% size)
+
+**Example:**
+```javascript
+// Make bubbles 1.5x larger
+map.setBubbleSizeMultiplier(1.5);
+
+// Make bubbles smaller
+map.setBubbleSizeMultiplier(0.75);
+```
 
 ##### setCallbacks(callbacks)
 

@@ -978,6 +978,22 @@
       return this;
     }
 
+    setBubbleSizeMultiplier(multiplier) {
+      if (typeof multiplier !== 'number' || multiplier <= 0) {
+        throw new Error('Size multiplier must be a positive number');
+      }
+      
+      this.scatterData.forEach(m => {
+        if (!m.originalSize) {
+          m.originalSize = m.size;
+        }
+        m.size = Math.round(m.originalSize * multiplier);
+      });
+      
+      this.render();
+      return this;
+    }
+
     setCallbacks(callbacks) {
       this.callbacks = { ...this.callbacks, ...callbacks };
       return this;

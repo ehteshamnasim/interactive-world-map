@@ -94,6 +94,12 @@ export class InteractiveMap {
   updateMarkers(markers: Marker[]): void;
   
   /**
+   * Set bubble size multiplier for all markers
+   * @param multiplier - Size multiplier (e.g., 1.5 for 150% size)
+   */
+  setBubbleSizeMultiplier(multiplier: number): this;
+  
+  /**
    * Set event callbacks
    * @param callbacks - Object with callback functions
    */

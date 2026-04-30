@@ -1,6 +1,6 @@
 {
   "name": "interactive-world-map",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Interactive world map with choropleth visualization, customizable colors, bubble markers, TypeScript support, and data utilities",
   "main": "interactive-map.js",
   "types": "interactive-map.d.ts",
