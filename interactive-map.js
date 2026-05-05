@@ -103,6 +103,7 @@
       this.scatterData = [];
       this.filteredCountryData = [];
       this.filteredScatterData = [];
+      this.bubbleColorScale = null;
       
       this.callbacks = {
         onCountryClick: null,
@@ -477,16 +478,19 @@
         lat: scatterDataToRender.map(d => d.lat),
         text: scatterDataToRender.map(d => d.label || ''),
         textposition: 'top center',
+        customdata: scatterDataToRender.map(d => d.value || null),
         marker: {
           size: scatterDataToRender.map(d => (d.size || 50) * 0.35),
-          color: scatterDataToRender.map(d => d.color || currentTheme.scatterDefault),
+          color: this.bubbleColorScale ? scatterDataToRender.map(d => this._getBubbleColor(d)) : scatterDataToRender.map(d => d.color || currentTheme.scatterDefault),
           opacity: 0.75,
           line: {
             color: this.config.theme === 'dark' ? '#2d7a5f' : '#2d7a5f',
             width: 1.5
           }
         },
-        hovertemplate: '<b>%{text}</b><br>Lat: %{lat}<br>Lon: %{lon}<extra></extra>',
+        hovertemplate: scatterDataToRender.some(d => d.value) 
+          ? '<b>%{text}</b><br>Value: %{customdata}<br>Lat: %{lat}<br>Lon: %{lon}<extra></extra>'
+          : '<b>%{text}</b><br>Lat: %{lat}<br>Lon: %{lon}<extra></extra>',
         hoverlabel: {
           bgcolor: this.config.theme === 'dark' ? '#1e2530' : 'white',
           font: { color: this.config.theme === 'dark' ? 'white' : 'black' }
@@ -992,6 +996,102 @@
       
       this.render();
       return this;
+    }
+
+    setBubbleColorScale(colorScale) {
+      if (!colorScale) {
+        this.bubbleColorScale = null;
+        this.bubbleColorThresholds = null;
+        this.render();
+        return this;
+      }
+      
+      if (!Array.isArray(colorScale) || colorScale.length < 2) {
+        throw new Error('Color scale must be an array with at least 2 colors');
+      }
+      
+      this.bubbleColorScale = colorScale;
+      this.bubbleColorThresholds = null;
+      this.render();
+      return this;
+    }
+
+    setBubbleColorByValue(colorMap) {
+      if (!colorMap) {
+        this.bubbleColorThresholds = null;
+        this.bubbleColorScale = null;
+        this.render();
+        return this;
+      }
+      
+      this.bubbleColorThresholds = colorMap;
+      this.bubbleColorScale = null;
+      this.render();
+      return this;
+    }
+
+    _getBubbleColor(marker) {
+      if (!marker.value) {
+        return marker.color || this.config.colors[this.config.theme].scatterDefault;
+      }
+      
+      // Check if using threshold-based coloring
+      if (this.bubbleColorThresholds) {
+        for (let i = 0; i < this.bubbleColorThresholds.length; i++) {
+          const threshold = this.bubbleColorThresholds[i];
+          if (marker.value >= threshold.min && marker.value <= threshold.max) {
+            return threshold.color;
+          }
+        }
+        return marker.color || this.config.colors[this.config.theme].scatterDefault;
+      }
+      
+      // Use gradient-based coloring
+      if (!this.bubbleColorScale) {
+        return marker.color || this.config.colors[this.config.theme].scatterDefault;
+      }
+      
+      const values = this.scatterData.map(d => d.value || 0).filter(v => v > 0);
+      if (values.length === 0) return this.bubbleColorScale[0];
+      
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      
+      if (max === min) return this.bubbleColorScale[0];
+      
+      const normalized = (marker.value - min) / (max - min);
+      
+      // Interpolate between colors in the scale
+      const segmentCount = this.bubbleColorScale.length - 1;
+      const segment = normalized * segmentCount;
+      const lowerIndex = Math.floor(segment);
+      const upperIndex = Math.min(lowerIndex + 1, segmentCount);
+      const segmentFraction = segment - lowerIndex;
+      
+      return this._interpolateColor(
+        this.bubbleColorScale[lowerIndex],
+        this.bubbleColorScale[upperIndex],
+        segmentFraction
+      );
+    }
+    
+    _interpolateColor(color1, color2, fraction) {
+      const hex1 = color1.replace('#', '');
+      const hex2 = color2.replace('#', '');
+      
+      const r1 = parseInt(hex1.substring(0, 2), 16);
+      const g1 = parseInt(hex1.substring(2, 4), 16);
+      const b1 = parseInt(hex1.substring(4, 6), 16);
+      
+      const r2 = parseInt(hex2.substring(0, 2), 16);
+      const g2 = parseInt(hex2.substring(2, 4), 16);
+      const b2 = parseInt(hex2.substring(4, 6), 16);
+      
+      const r = Math.round(r1 + (r2 - r1) * fraction);
+      const g = Math.round(g1 + (g2 - g1) * fraction);
+      const b = Math.round(b1 + (b2 - b1) * fraction);
+      
+      return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
     }
 
     setCallbacks(callbacks) {

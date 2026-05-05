@@ -419,6 +419,32 @@
           <input type="range" id="bubbleSize" min="0.5" max="2" step="0.1" value="1" onchange="updateBubbleSize()" oninput="document.getElementById('bubbleSizeValue').textContent = this.value">
           <span id="bubbleSizeValue" style="margin-left: 8px; font-weight: bold;">1</span>
         </div>
+        
+        <div class="control">
+          <label>Bubble Color by Value</label>
+          <select id="bubbleColorScale" onchange="updateBubbleColorScale()">
+            <option value="">Off (use marker colors)</option>
+            <option value="blue" selected>Blue Gradient</option>
+            <option value="green">Green Gradient</option>
+            <option value="red">Red Gradient</option>
+            <option value="purple">Purple Gradient</option>
+            <option value="orange">Orange Gradient</option>
+            <option value="rainbow">Rainbow</option>
+          </select>
+          <small style="display: block; margin-top: 4px; color: #666; font-size: 11px;">
+            Colors bubbles by their value property (60-98 range)
+          </small>
+        </div>
+        
+        <div class="control">
+          <label>
+            <input type="checkbox" id="useCustomColorRanges" onchange="updateBubbleColorScale()">
+            Use Custom Color Ranges
+          </label>
+          <small style="display: block; margin-top: 4px; color: #666; font-size: 11px;">
+            Red (60-69), Orange (70-79), Yellow (80-89), Green (90-98)
+          </small>
+        </div>
       </div>
       
       <div class="section">
@@ -523,22 +549,22 @@
     ];
     
     const sampleMarkers = [
-      { lon: -100, lat: 38, size: 120, label: 'New York' },
-      { lon: -115, lat: 62, size: 100, label: 'Vancouver' },
-      { lon: -3, lat: 51, size: 110, label: 'London' },
-      { lon: 2, lat: 48, size: 105, label: 'Paris' },
-      { lon: 139, lat: 35, size: 115, label: 'Tokyo' },
-      { lon: 151, lat: -33, size: 95, label: 'Sydney' },
-      { lon: -99, lat: 19, size: 100, label: 'Mexico City' },
-      { lon: -47, lat: -23, size: 110, label: 'São Paulo' },
-      { lon: 13, lat: 52, size: 105, label: 'Berlin' },
-      { lon: 37, lat: 55, size: 115, label: 'Moscow' },
-      { lon: 121, lat: 31, size: 120, label: 'Shanghai' },
-      { lon: 77, lat: 28, size: 110, label: 'New Delhi' },
-      { lon: -58, lat: -34, size: 95, label: 'Buenos Aires' },
-      { lon: 31, lat: 30, size: 100, label: 'Cairo' },
-      { lon: 103, lat: 1, size: 105, label: 'Singapore' },
-      { lon: 18, lat: -33, size: 95, label: 'Cape Town' }
+      { lon: -100, lat: 38, size: 120, label: 'New York', value: 85 },
+      { lon: -115, lat: 62, size: 100, label: 'Vancouver', value: 72 },
+      { lon: -3, lat: 51, size: 110, label: 'London', value: 78 },
+      { lon: 2, lat: 48, size: 105, label: 'Paris', value: 80 },
+      { lon: 139, lat: 35, size: 115, label: 'Tokyo', value: 95 },
+      { lon: 151, lat: -33, size: 95, label: 'Sydney', value: 88 },
+      { lon: -99, lat: 19, size: 100, label: 'Mexico City', value: 65 },
+      { lon: -47, lat: -23, size: 110, label: 'São Paulo', value: 70 },
+      { lon: 13, lat: 52, size: 105, label: 'Berlin', value: 82 },
+      { lon: 37, lat: 55, size: 115, label: 'Moscow', value: 68 },
+      { lon: 121, lat: 31, size: 120, label: 'Shanghai', value: 92 },
+      { lon: 77, lat: 28, size: 110, label: 'New Delhi', value: 75 },
+      { lon: -58, lat: -34, size: 95, label: 'Buenos Aires', value: 73 },
+      { lon: 31, lat: 30, size: 100, label: 'Cairo', value: 60 },
+      { lon: 103, lat: 1, size: 105, label: 'Singapore', value: 98 },
+      { lon: 18, lat: -33, size: 95, label: 'Cape Town', value: 66 }
     ];
     
     async function initMap() {
@@ -568,6 +594,11 @@
       await map.loadCountryData(sampleCountries);
       await map.loadScatterData(sampleMarkers);
       await map.render();
+      
+      // Apply default blue color scale for bubbles
+      const defaultColorScale = ['#e3f2fd', '#90caf9', '#42a5f5', '#1e88e5', '#1565c0'];
+      map.setBubbleColorScale(defaultColorScale);
+      document.getElementById('bubbleColorScale').value = 'blue';
     }
     
     function showMessage(message, type = 'info') {
@@ -713,6 +744,42 @@
       if (map) {
         map.setBubbleSizeMultiplier(multiplier);
         showMessage(`Bubble size updated to ${multiplier}x`, 'success');
+      }
+    }
+    
+    function updateBubbleColorScale() {
+      const scale = document.getElementById('bubbleColorScale').value;
+      const useCustomRanges = document.getElementById('useCustomColorRanges').checked;
+      if (!map) return;
+      
+      // Use custom color ranges if checkbox is checked
+      if (useCustomRanges) {
+        const customColorMap = [
+          { min: 60, max: 69, color: '#ef5350' },  // Red for low
+          { min: 70, max: 79, color: '#ffa726' },  // Orange for medium
+          { min: 80, max: 89, color: '#ffeb3b' },  // Yellow for good
+          { min: 90, max: 98, color: '#66bb6a' }   // Green for excellent
+        ];
+        map.setBubbleColorByValue(customColorMap);
+        showMessage('Using custom color ranges: Red/Orange/Yellow/Green', 'success');
+        return;
+      }
+      
+      const colorScales = {
+        'blue': ['#e3f2fd', '#90caf9', '#42a5f5', '#1e88e5', '#1565c0'],
+        'green': ['#e8f5e9', '#a5d6a7', '#66bb6a', '#43a047', '#2e7d32'],
+        'red': ['#ffebee', '#ef9a9a', '#ef5350', '#e53935', '#c62828'],
+        'purple': ['#f3e5f5', '#ce93d8', '#ab47bc', '#8e24aa', '#6a1b9a'],
+        'orange': ['#fff3e0', '#ffcc80', '#ffa726', '#fb8c00', '#e65100'],
+        'rainbow': ['#9c27b0', '#2196f3', '#4caf50', '#ffeb3b', '#ff5722']
+      };
+      
+      if (scale && colorScales[scale]) {
+        map.setBubbleColorScale(colorScales[scale]);
+        showMessage(`Bubble colors set to ${scale} gradient`, 'success');
+      } else {
+        map.setBubbleColorScale(null);
+        showMessage('Bubble color by value disabled', 'info');
       }
     }
     

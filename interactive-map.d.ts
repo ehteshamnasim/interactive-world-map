@@ -34,6 +34,13 @@ export interface Marker {
   size: number;
   text: string;
   color?: string;
+  value?: number;
+}
+
+export interface ColorThreshold {
+  min: number;
+  max: number;
+  color: string;
 }
 
 export interface CountryData {
@@ -98,6 +105,18 @@ export class InteractiveMap {
    * @param multiplier - Size multiplier (e.g., 1.5 for 150% size)
    */
   setBubbleSizeMultiplier(multiplier: number): this;
+  
+  /**
+   * Set color scale for bubbles based on their values
+   * @param colorScale - Array of colors for gradient, or null to disable
+   */
+  setBubbleColorScale(colorScale: string[] | null): this;
+  
+  /**
+   * Set custom colors for specific value ranges
+   * @param colorMap - Array of threshold objects with min, max, and color, or null to disable
+   */
+  setBubbleColorByValue(colorMap: ColorThreshold[] | null): this;
   
   /**
    * Set event callbacks

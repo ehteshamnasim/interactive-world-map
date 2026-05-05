@@ -561,6 +561,47 @@ map.<span class="function">setBubbleSizeMultiplier</span>(<span class="number">2
 map.<span class="function">setBubbleSizeMultiplier</span>(<span class="number">1</span>);    <span class="comment">// Reset to original</span></code></pre>
     </div>
     
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Color Bubbles by Value</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'interactions-bubble-color')">Copy</button>
+      </div>
+      <pre><code id="interactions-bubble-color"><span class="comment">// Add values to your scatter data</span>
+<span class="keyword">const</span> markers = [
+  { <span class="property">lat</span>: <span class="number">40.7128</span>, <span class="property">lon</span>: <span class="number">-74.0060</span>, <span class="property">label</span>: <span class="string">'New York'</span>, <span class="property">size</span>: <span class="number">100</span>, <span class="property">value</span>: <span class="number">85</span> },
+  { <span class="property">lat</span>: <span class="number">51.5074</span>, <span class="property">lon</span>: <span class="number">-0.1278</span>, <span class="property">label</span>: <span class="string">'London'</span>, <span class="property">size</span>: <span class="number">80</span>, <span class="property">value</span>: <span class="number">72</span> },
+  { <span class="property">lat</span>: <span class="number">35.6762</span>, <span class="property">lon</span>: <span class="number">139.6503</span>, <span class="property">label</span>: <span class="string">'Tokyo'</span>, <span class="property">size</span>: <span class="number">90</span>, <span class="property">value</span>: <span class="number">95</span> }
+];
+
+<span class="comment">// Define color gradient (low to high values)</span>
+<span class="keyword">const</span> colorScale = [<span class="string">'#e3f2fd'</span>, <span class="string">'#90caf9'</span>, <span class="string">'#42a5f5'</span>, <span class="string">'#1565c0'</span>];
+
+<span class="comment">// Apply color scale based on marker values</span>
+map.<span class="function">setBubbleColorScale</span>(colorScale);
+
+<span class="comment">// Disable color by value (use custom marker colors)</span>
+map.<span class="function">setBubbleColorScale</span>(<span class="keyword">null</span>);</code></pre>
+    </div>
+    
+    <div class="code-section">
+      <div class="code-header">
+        <h4>Custom Colors for Specific Values</h4>
+        <button class="copy-btn" onclick="copyCode(this, 'interactions-bubble-custom-color')">Copy</button>
+      </div>
+      <pre><code id="interactions-bubble-custom-color"><span class="comment">// Define exact colors for specific value ranges</span>
+<span class="keyword">const</span> colorMap = [
+  { <span class="property">min</span>: <span class="number">0</span>, <span class="property">max</span>: <span class="number">40</span>, <span class="property">color</span>: <span class="string">'#ff0000'</span> },     <span class="comment">// Red for low values</span>
+  { <span class="property">min</span>: <span class="number">41</span>, <span class="property">max</span>: <span class="number">70</span>, <span class="property">color</span>: <span class="string">'#ffa500'</span> },    <span class="comment">// Orange for medium</span>
+  { <span class="property">min</span>: <span class="number">71</span>, <span class="property">max</span>: <span class="number">85</span>, <span class="property">color</span>: <span class="string">'#ffff00'</span> },    <span class="comment">// Yellow for good</span>
+  { <span class="property">min</span>: <span class="number">86</span>, <span class="property">max</span>: <span class="number">100</span>, <span class="property">color</span>: <span class="string">'#00ff00'</span> }   <span class="comment">// Green for excellent</span>
+];
+
+map.<span class="function">setBubbleColorByValue</span>(colorMap);
+
+<span class="comment">// Reset to default</span>
+map.<span class="function">setBubbleColorByValue</span>(<span class="keyword">null</span>);</code></pre>
+    </div>
+    
     <!-- SECTION 6: ADVANCED -->
     <h2 id="advanced">6. Advanced Configuration</h2>
     
